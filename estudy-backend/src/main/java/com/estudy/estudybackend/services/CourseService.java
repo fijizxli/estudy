@@ -6,7 +6,6 @@ import com.estudy.estudybackend.repositories.CourseRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,6 +42,17 @@ public class CourseService {
         }
         course.getStudyMaterials().clear();
         courseRepository.delete(course);
+    }
+
+    public void putCourse(Long courseId, Course updatedCourse){
+        Course course = courseRepository.findById(courseId).orElseThrow(
+                () -> new EntityNotFoundException("Course not found")
+        );
+        course.setTitle(updatedCourse.getTitle());
+        course.setDescription(updatedCourse.getDescription());
+        course.setLecturer(updatedCourse.getLecturer());
+        course.setId(courseId);
+        courseRepository.save(course);
     }
 
     public void saveCourse(Course c){

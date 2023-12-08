@@ -48,4 +48,10 @@ public class CourseController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @PutMapping("/{courseId}")
+    public ResponseEntity<Void> putCourse(@PathVariable Long courseId, @RequestBody Course course){
+        cs.putCourse(courseId, course);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 }
