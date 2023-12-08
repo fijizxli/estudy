@@ -1,8 +1,10 @@
 package com.estudy.estudybackend.services;
 
 import com.estudy.estudybackend.models.Course;
+import com.estudy.estudybackend.models.StudyMaterial;
 import com.estudy.estudybackend.repositories.CourseRepository;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,17 @@ public class CourseService {
         List<Course> courses = new ArrayList<Course>();
         coursesIt.forEach(courses::add);
         return courses;
+    }
+
+    public void deleteCourse(Long courseId){
+        Course course = courseRepository.findById(courseId).orElseThrow(
+                () -> new EntityNotFoundException("Course not found"));
+
+        for (StudyMaterial studyMaterial : course.getStudyMaterials()) {
+            studyMaterial.setCourse(null);
+        }
+        course.getStudyMaterials().clear();
+        courseRepository.delete(course);
     }
 
     public void saveCourse(Course c){

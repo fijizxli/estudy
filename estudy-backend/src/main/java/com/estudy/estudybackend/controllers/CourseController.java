@@ -41,4 +41,11 @@ public class CourseController {
         cs.saveCourse(c);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
+
+    @DeleteMapping("/{courseId}")
+    public ResponseEntity<Void> deleteCourseById(@PathVariable Long courseId){
+        cs.deleteCourse(courseId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
 }
