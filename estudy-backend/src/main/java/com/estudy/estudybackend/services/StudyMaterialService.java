@@ -45,7 +45,6 @@ public class StudyMaterialService {
             studyMaterial.setCourse(attachedCourse);
             attachedCourse.getStudyMaterials().add(studyMaterial);
             saveStudyMaterial(studyMaterial);
-            entityManager.clear();
         }
     }
 
