@@ -19,8 +19,7 @@ public class Course {
 
     private String lecturer;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "course")
     private List<StudyMaterial> studyMaterials = new ArrayList<>();
 
 
