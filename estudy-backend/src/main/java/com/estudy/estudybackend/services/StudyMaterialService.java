@@ -4,6 +4,7 @@ import com.estudy.estudybackend.models.Course;
 import com.estudy.estudybackend.models.StudyMaterial;
 import com.estudy.estudybackend.repositories.StudyMaterialRepository;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class StudyMaterialService {
@@ -46,6 +48,14 @@ public class StudyMaterialService {
             attachedCourse.getStudyMaterials().add(studyMaterial);
             saveStudyMaterial(studyMaterial);
         }
+    }
+
+    @Transactional
+    public void deleteStudyMaterialById(Long studyMaterialId){
+        StudyMaterial studyMaterial = studyMaterialRepository.findById(studyMaterialId).orElseThrow(
+                () -> new EntityNotFoundException("Study material not found")
+        );
+        studyMaterialRepository.deleteById(studyMaterial.getId());
     }
 
     public void saveStudyMaterial(StudyMaterial studyMaterial){

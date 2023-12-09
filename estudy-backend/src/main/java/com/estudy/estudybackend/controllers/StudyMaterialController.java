@@ -58,5 +58,9 @@ public class StudyMaterialController {
         }
 
     }
-
+    @DeleteMapping("/sm/{studyMaterialId}")
+    public ResponseEntity<StudyMaterial> deleteStudyMaterialById(@PathVariable Long studyMaterialId) {
+        studyMaterialService.deleteStudyMaterialById(studyMaterialId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }
