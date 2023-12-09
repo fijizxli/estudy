@@ -5,9 +5,13 @@ import com.estudy.estudybackend.services.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static org.springframework.security.authorization.AuthorityAuthorizationManager.hasRole;
 
 @RestController
 @RequestMapping("/courses")
@@ -20,12 +24,14 @@ public class CourseController {
         this.cs = cs;
     }
 
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     @GetMapping("")
     public ResponseEntity<List<Course>> getCourses(){
         List<Course> courses = cs.getCourses();
         return new ResponseEntity<>(courses, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     @GetMapping("/{courseId}")
     public ResponseEntity<Course> getCourseById(@PathVariable Long courseId){
         Course course = cs.getCourseById(courseId);
@@ -36,18 +42,21 @@ public class CourseController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/create")
     public ResponseEntity<Void> createCourse(@RequestBody Course c){
         cs.saveCourse(c);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{courseId}")
     public ResponseEntity<Void> deleteCourseById(@PathVariable Long courseId){
         cs.deleteCourse(courseId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{courseId}")
     public ResponseEntity<Void> putCourse(@PathVariable Long courseId, @RequestBody Course course){
         cs.putCourse(courseId, course);
