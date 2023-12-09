@@ -50,6 +50,19 @@ public class StudyMaterialService {
         }
     }
 
+    public void updateStudyMaterial(Long studyMaterialId, StudyMaterial updatedStudyMaterial){
+        StudyMaterial studyMaterial = studyMaterialRepository.findById(studyMaterialId).orElseThrow(
+                () -> new EntityNotFoundException("Study material not found")
+        );
+        studyMaterial.setTitle(updatedStudyMaterial.getTitle());
+        studyMaterial.setDescription(updatedStudyMaterial.getDescription());
+        studyMaterial.setCourse(studyMaterial.getCourse());
+        studyMaterial.setId(studyMaterialId);
+        studyMaterialRepository.save(studyMaterial);
+    }
+
+
+
     @Transactional
     public void deleteStudyMaterialById(Long studyMaterialId){
         StudyMaterial studyMaterial = studyMaterialRepository.findById(studyMaterialId).orElseThrow(

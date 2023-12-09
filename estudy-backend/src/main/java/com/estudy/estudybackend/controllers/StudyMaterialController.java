@@ -58,6 +58,23 @@ public class StudyMaterialController {
         }
 
     }
+    @PutMapping("/{studyMaterialId}")
+    public ResponseEntity<Course> updateStudyMaterial(@PathVariable Long studyMaterialId, @RequestBody StudyMaterial updatedStudyMaterial){
+
+        try {
+            StudyMaterial studyMaterial = studyMaterialService.getStudyMaterialById(studyMaterialId);
+            if (studyMaterial == null){
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            studyMaterialService.updateStudyMaterial(studyMaterialId, updatedStudyMaterial);
+
+            return new ResponseEntity<>(HttpStatus.OK);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
     @DeleteMapping("/sm/{studyMaterialId}")
     public ResponseEntity<StudyMaterial> deleteStudyMaterialById(@PathVariable Long studyMaterialId) {
         studyMaterialService.deleteStudyMaterialById(studyMaterialId);
