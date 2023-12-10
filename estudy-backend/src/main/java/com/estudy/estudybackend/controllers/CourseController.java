@@ -57,9 +57,19 @@ public class CourseController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PutMapping("/{courseId}")
-    public ResponseEntity<Void> putCourse(@PathVariable Long courseId, @RequestBody Course course){
-        cs.putCourse(courseId, course);
+    @PatchMapping("/{courseId}")
+    public ResponseEntity<Void> patchCourse(@PathVariable Long courseId, @RequestBody Course course){
+        Course existingCourse = cs.getCourseById(courseId);
+        if (course.getTitle() != null){
+            existingCourse.setTitle(course.getTitle());
+        }
+        if (course.getDescription() != null){
+            existingCourse.setDescription(course.getDescription());
+        }
+        if (course.getLecturer() != null){
+            existingCourse.setLecturer(course.getLecturer());
+        }
+        cs.saveCourse(existingCourse);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

@@ -63,22 +63,18 @@ public class StudyMaterialController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PutMapping("/{studyMaterialId}")
-    public ResponseEntity<Course> updateStudyMaterial(@PathVariable Long studyMaterialId, @RequestBody StudyMaterial updatedStudyMaterial){
-
-        try {
-            StudyMaterial studyMaterial = studyMaterialService.getStudyMaterialById(studyMaterialId);
-            if (studyMaterial == null){
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-            studyMaterialService.updateStudyMaterial(studyMaterialId, updatedStudyMaterial);
-
-            return new ResponseEntity<>(HttpStatus.OK);
-
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    @PatchMapping("/{studyMaterialId}")
+    public ResponseEntity<Course> updateStudyMaterial(@PathVariable Long studyMaterialId, @RequestBody StudyMaterial studyMaterial){
+        StudyMaterial existingStudyMaterial = studyMaterialService.getStudyMaterialById(studyMaterialId);
+        if (studyMaterial.getTitle() != null) {
+            existingStudyMaterial.setTitle(studyMaterial.getTitle());
+        }
+        if (studyMaterial.getDescription() != null) {
+            existingStudyMaterial.setDescription(studyMaterial.getDescription());
         }
 
+        studyMaterialService.saveStudyMaterial(existingStudyMaterial);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
