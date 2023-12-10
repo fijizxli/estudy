@@ -33,7 +33,7 @@ public class SecurityConfig {
         http.csrf().disable();
         http.cors().disable();
         http.authorizeRequests()
-            .anyRequest().authenticated().and()
+            .anyRequest().permitAll().and()
             .userDetailsService(userDetailsService);
 
             //.and()
