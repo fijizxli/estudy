@@ -17,7 +17,7 @@ function Login() {
             const credentials = `${username}:${password}`;
             const base64 = btoa(credentials);
             const response = await axios.get(
-                "/courses",{
+                "/login",{
                     headers: {
                         'Authorization':`Basic ${base64}`,
                         'Content-Type':'application/json',
