@@ -3,6 +3,8 @@ import DataContext from "../context";
 import closeButton from "../close-button.svg";
 import axios from "../axios";
 import ErrorMessage from "./ErrorMessage";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {icon} from "@fortawesome/fontawesome-svg-core/import.macro";
 
 function Login() {
     const { setIsLoggedIn, setUser, setAuthModalType } = useContext(DataContext);
@@ -39,7 +41,7 @@ function Login() {
         <div className="AuthShadow">
             <div className="AuthContainer">
                 <div className="Titlebar">
-                    <h1>Sign in</h1>
+                    <h1>Sign in <FontAwesomeIcon icon={icon({name:"user"})}/></h1>
                     <img
                         src={closeButton}
                         alt="close-button"
@@ -76,7 +78,7 @@ function Login() {
                     />
 
                     <button className="AuthSubmit" type="submit">
-                        Sign in
+                        Sign in <FontAwesomeIcon icon={icon({name: 'lock'})}/>
                     </button>
                 </form>
             </div>
@@ -84,9 +86,68 @@ function Login() {
     );
 }
 
+    return (
+        <div className="AuthShadow">
+            <div className="AuthContainer">
+                <div className="Titlebar">
+                    <h1>Register <FontAwesomeIcon icon={icon({name:"user-plus"})}/></h1>
+                    <img
+                        src={closeButton}
+                        alt="close-button"
+                        className="Close"
+                        onClick={() => setAuthModalType("Inactive")}
+                    />
+                </div>
+                {errorPresent ? <ErrorMessage text={errorMessage} /> : null}
+                <form onSubmit={handleSubmit}>
+                    <label htmlFor="username">
+                        <b>username</b>
+                    </label>
+                    <input
+                        className="AuthInput"
+                        type="text"
+                        placeholder="username"
+                        id="username"
+                        values={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        required
+                    />
+
+                    <label htmlFor="password">
+                        <b>password</b>
+                    </label>
+                    <input
+                        className="AuthInput"
+                        type="password"
+                        placeholder="password"
+                        id="password"
+                        values={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                    />
+                    <label htmlFor="confirm password">
+                        <b>password</b>
+                    </label>
+                    <input
+                        className="AuthInput"
+                        type="password"
+                        placeholder="password"
+                        id="password"
+                        values={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        required
+                    />
+                    <button className="AuthSubmit" type="submit">
+                        Register <FontAwesomeIcon icon={icon({name: 'lock'})}/>
+                    </button>
+                </form>
+            </div>
+        </div>
+    );
+}
 
 export default function AuthenticationModal() {
-    const { AuthModalType } = useContext(DataContext);
+    const {AuthModalType} = useContext(DataContext);
 
     switch (AuthModalType) {
         case "Login":

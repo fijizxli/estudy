@@ -1,9 +1,12 @@
 import React from 'react'
 import { useContext } from 'react'
-import DataContext from '../context'
+import DataContext, {useUser} from '../context'
 import { Link } from 'react-router-dom'
 import axios from '../axios'
 
+import { icon } from '@fortawesome/fontawesome-svg-core/import.macro'
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import context from "../context";
 
 export default function Navbar() {
     const {isLoggedIn, setUser} = useContext(DataContext);
@@ -14,7 +17,19 @@ export default function Navbar() {
         return (
         <div>
             <nav>
-                <li><button className='SignIn' onClick={() => setAuthModalType("Login")}>Sign in</button></li>
+                <li className="estudylogo"><Link to="/"><FontAwesomeIcon
+                    icon={icon({name: 'graduation-cap'})}/> estudy</Link></li>
+                <li className='Spacer'></li>
+                <li>
+                    <button className='SignIn' onClick={() => setAuthModalType("Login")}>
+                        Sign in <FontAwesomeIcon icon={icon({name: 'user'})}/>
+                    </button>
+                </li>
+                <li>
+                    <button className='SignIn' onClick={() => setAuthModalType("Register")}>
+                        Register <FontAwesomeIcon icon={icon({name: 'user-plus'})}/>
+                    </button>
+                </li>
             </nav>
         </div>
         );
@@ -27,13 +42,15 @@ export default function Navbar() {
         }
 
         const {setIsLoggedIn} = useContext(DataContext);
+        const { user } = useUser();
 
         return (
             <div>
                 <nav>
-                    <li><Link to="/courses">Courses</Link></li>
-                    <li><Link to="/courses/create">New course</Link></li>
-                    <li><b>you are logged in.</b></li>
+                    <li className="estudylogo"><Link to="/courses"><FontAwesomeIcon icon={icon({name: 'graduation-cap'})}/> estudy</Link></li>
+                    <li><Link to="/courses"><FontAwesomeIcon icon={icon({name:'book'})}/> Courses</Link></li>
+                    <li><Link to="/courses/create"><FontAwesomeIcon icon={icon({name:'file'})}/> New course</Link></li>
+                    <li><b>you are logged in as {user}.</b></li>
                     <li className='Spacer'></li>
                     <li>
                         <button className='SignIn' onClick={handleLogout}>Logout</button>
