@@ -85,6 +85,41 @@ function Login() {
         </div>
     );
 }
+function Register() {
+    const { setIsLoggedIn, setUser, setAuthModalType } = useContext(DataContext);
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
+    const [errorPresent, setErrorPresent] = useState(false);
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            let data = JSON.stringify(
+                {
+                    username: username,
+                    password: password,
+                    confirmPassword: confirmPassword,
+                }
+            )
+            e.preventDefault();
+            const response = await axios.post(
+                "/register",data,
+                {
+                    headers: {
+                        'Content-Type':'application/json',
+                    },
+                }
+            );
+
+            setErrorPresent(false);
+            setAuthModalType("Inactive");
+        } catch (error) {
+            const message = Object.values(error.response.data)[0];
+            setErrorMessage(message);
+            setErrorPresent(true);
+        }
+    };
 
     return (
         <div className="AuthShadow">
@@ -152,6 +187,8 @@ export default function AuthenticationModal() {
     switch (AuthModalType) {
         case "Login":
             return Login();
+        case "Register":
+            return Register();
         default:
             return null;
     }
