@@ -5,7 +5,7 @@ body {
 }
 
 .estudylogo{
-  color: WHITE;
+  color: #bbb;
   font-weight: bold;
   font-size: x-large;
   font-variant-caps: small-caps;
@@ -97,7 +97,7 @@ nav li.Spacer {
   padding-left: 20px;
   display: flex;
 }
-  .contentsTable {
+.contentsTable {
   background-color: darkslateblue;
   max-width: 60%;
   border: 2px solid darkslategray;
@@ -121,7 +121,6 @@ nav li.Spacer {
 .contentsTable tr:hover {
   background-color: slateblue;
 }
-
 
 .contentsTable :link{
   text-decoration: none;
