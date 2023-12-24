@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.estudy</groupId>
     <artifactId>estudy-backend</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <name>estudy-backend</name>
     <description>estudy-backend</description>
     <properties>
@@ -28,6 +28,7 @@
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
+            <!--<version>8.1.0</version>-->
             <scope>runtime</scope>
         </dependency>
         <dependency>
