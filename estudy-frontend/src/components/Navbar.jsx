@@ -9,7 +9,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import context from "../context";
 
 export default function Navbar() {
-    const {isLoggedIn, setUser} = useContext(DataContext);
+    const {isLoggedIn, setUser, userName} = useContext(DataContext);
 
     const SignIn = () => {
         const {setAuthModalType} = useContext(DataContext);
@@ -50,7 +50,7 @@ export default function Navbar() {
                     <li className="estudylogo"><Link to="/courses"><FontAwesomeIcon icon={icon({name: 'graduation-cap'})}/> estudy</Link></li>
                     <li><Link to="/courses"><FontAwesomeIcon icon={icon({name:'book'})}/> Courses</Link></li>
                     <li><Link to="/courses/create"><FontAwesomeIcon icon={icon({name:'file'})}/> New course</Link></li>
-                    <li><b>you are logged in as {user}.</b></li>
+                    <li><b>you are logged in as {userName}.</b></li>
                     <li className='Spacer'></li>
                     <li>
                         <button className='SignIn' onClick={handleLogout}>Logout</button>
