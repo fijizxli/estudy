@@ -7,7 +7,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {icon} from "@fortawesome/fontawesome-svg-core/import.macro";
 
 function Login() {
-    const { setIsLoggedIn, setUser, setAuthModalType } = useContext(DataContext);
+    const { setUserName, setUserId, setIsLoggedIn, setUser, setAuthModalType } = useContext(DataContext);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
@@ -26,13 +26,24 @@ function Login() {
                     },
                 }
             );
+            const user = await axios.get(
+                "/userbyname/" + username,{
+                    headers: {
+                        'Authorization':`Basic ${base64}`,
+                        'Content-Type':'application/json',
+                    },
+                }
+            );
+
+
+            setUserId(user.data.id)
+            setUserName(username);
             setUser(base64);
             setIsLoggedIn(true);
             setErrorPresent(false);
             setAuthModalType("Inactive");
         } catch (error) {
-            const message = Object.values(error.response.data)[0];
-            setErrorMessage(message);
+            console.log(error)
             setErrorPresent(true);
         }
     };
