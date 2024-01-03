@@ -44,4 +44,12 @@ public class UserDetailServiceImpl implements UserDetailsService {
         user.getCourses().add(course);
         userRepository.save(user);
     }
+
+    @Transactional
+    public void removeUserFromCourse(Long userId, Long courseId){
+        User user = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
+        Course course = courseRepository.findById(courseId).orElseThrow(EntityNotFoundException::new);
+        user.getCourses().remove(course);
+        userRepository.save(user);
+    }
 }
