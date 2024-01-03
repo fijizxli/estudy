@@ -24,7 +24,7 @@ public class Course {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "course")
     private List<StudyMaterial> studyMaterials = new ArrayList<>();
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "courses")
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY, mappedBy = "courses")
     @JsonIgnoreProperties("courses")
     private Set<User> students;
 
