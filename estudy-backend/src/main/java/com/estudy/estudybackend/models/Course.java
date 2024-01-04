@@ -1,11 +1,13 @@
 package com.estudy.estudybackend.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name="courses")
@@ -22,8 +24,19 @@ public class Course {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "course")
     private List<StudyMaterial> studyMaterials = new ArrayList<>();
 
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY, mappedBy = "courses")
+    @JsonIgnoreProperties("courses")
+    private Set<User> students;
 
     public Course() {
+    }
+
+    public Course(String title, String description, String lecturer, List<StudyMaterial> studyMaterials, Set<User> students) {
+        this.title = title;
+        this.description = description;
+        this.lecturer = lecturer;
+        this.studyMaterials = studyMaterials;
+        this.students = students;
     }
 
     public Course(String title, String description, String lecturer, List<StudyMaterial> studyMaterials) {
@@ -76,6 +89,14 @@ public class Course {
 
     public void setStudyMaterials(List<StudyMaterial> studyMaterials) {
         this.studyMaterials = studyMaterials;
+    }
+
+    public Set<User> getStudents() {
+        return students;
+    }
+
+    public void setStudents(Set<User> students) {
+        this.students = students;
     }
 
     @Override
