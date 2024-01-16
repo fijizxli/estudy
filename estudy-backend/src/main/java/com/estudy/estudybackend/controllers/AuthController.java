@@ -13,7 +13,7 @@ public class AuthController {
 
     @Autowired
     private RegistrationService registrationService;
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/login")
     public ResponseEntity<Void> login(){
         return new ResponseEntity<>(HttpStatus.OK);
