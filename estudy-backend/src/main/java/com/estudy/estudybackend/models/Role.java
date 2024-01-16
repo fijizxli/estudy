@@ -1,5 +1,6 @@
 package com.estudy.estudybackend.models;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -13,6 +14,7 @@ public class Role implements GrantedAuthority{
     @GeneratedValue(strategy= GenerationType.SEQUENCE)
     private Long id;
 
+    @Column(unique = true)
     private String name;
 
     public String getName() {
