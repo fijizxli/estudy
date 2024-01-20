@@ -3,6 +3,7 @@ package com.estudy.estudybackend;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -24,6 +25,12 @@ public class EstudyBackendApplication {
     @Autowired
     RoleRepository roleRepository;
 
+    @Value("${admin.username}")
+    private String adminUsername;
+
+    @Value("${admin.password}")
+    private String adminPassword;
+
     @Bean
     public CommandLineRunner dataLoader(UserRepository userRepository, PasswordEncoder encoder){
 
@@ -38,9 +45,9 @@ public class EstudyBackendApplication {
         }
 
         return args -> {
-            if (userRepository.findByUsername("HUV7eQ3XjDX5zw") == null){
-                User admin = new User("HUV7eQ3XjDX5zw", 
-                encoder.encode("71Va3w0Sjyg1BTk6yeDSQd8SEMxveX0Nf0WS6BcZy8eUPtmfcu"),
+            if (userRepository.findByUsername(adminUsername) == null){
+                User admin = new User(adminUsername,
+                encoder.encode(adminPassword),
                 Set.of(roleRepository.findByName("admin")));
                 userRepository.save(admin);
             }
