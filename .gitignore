@@ -1,4 +1,7 @@
 .vscode/settings.json
 play.sh
 replay.sh
+dbup.sh
+kube.yml
+.env
 estudy-pod.yml
