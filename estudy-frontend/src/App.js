@@ -13,24 +13,24 @@ import EditCourse from "./components/EditCourse";
 import EditStudyMaterial from "./components/EditStudyMaterial";
 
 function App() {
-      return (
-          <DataProvider>
-              <BrowserRouter>
-                  <Navbar/>
-                  <Routes>
-                      <Route path = "/" element={<div></div>}/>;
-                      <Route path = "courses" element={<CourseList/>}/>;
-                      <Route path = "courses/create" element={<AddCourse/>}/>;
-                      <Route path = "courses/:courseId" element={<Course/>}/>;
-                      <Route path = "courses/:courseId/create" element={<AddStudyMaterial/>}/>;
-                      <Route path = "courses/:courseId/:studyMaterialId" element={<StudyMaterial/>}/>;
-                      <Route path = "courses/edit/:courseId" element={<EditCourse/>}/>;
-                      <Route path = "courses/edit/:courseId/:studyMaterialId" element={<EditStudyMaterial/>}/>;
-                  </Routes>
-                  <AuthenticationModal />
-              </BrowserRouter>
-          </DataProvider>
-      );
+    return (
+        <DataProvider>
+            <BrowserRouter>
+                <Navbar/>
+                <Routes>
+                    <Route path = "/" element={<div></div>}/>;
+                    <Route path = "courses" element={<CourseList/>}/>;
+                    <Route path = "courses/create" element={<AddCourse/>}/>;
+                    <Route path = "courses/:courseId" element={<Course/>}/>;
+                    <Route path = "courses/:courseId/create" element={<AddStudyMaterial/>}/>;
+                    <Route path = "courses/:courseId/:studyMaterialId" element={<StudyMaterial/>}/>;
+                    <Route path = "courses/edit/:courseId" element={<EditCourse/>}/>;
+                    <Route path = "courses/edit/:courseId/:studyMaterialId" element={<EditStudyMaterial/>}/>;
+                </Routes>
+              <AuthenticationModal />
+            </BrowserRouter>
+        </DataProvider>
+    );
 }
 
 export default App;
