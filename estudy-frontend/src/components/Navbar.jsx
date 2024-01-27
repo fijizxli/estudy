@@ -9,8 +9,33 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import context from "../context";
 
 export default function Navbar() {
-    const {isLoggedIn, setUser, userName} = useContext(DataContext);
+    const {isLoggedIn, setUserId, setIsLoggedIn, setUserName, username, setUser, userName} = useContext(DataContext);
+    /*
+	const base64 = localStorage.getItem('base64');
+    if (base64) {
+        alert('Found stored credentials: ' + atob(base64));
+        const response = axios.get(
+            "/login",{
+                headers: {
+                    'Authorization':`Basic ${base64}`,
+                    'Content-Type':'application/json',
+                },
+            }
+        );
 
+        setUserName(username);
+        const user = axios.get(
+            "/userbyname/" + username,{
+                headers: {
+                    'Authorization':`Basic ${base64}`,
+                    'Content-Type':'application/json',
+                },
+            }
+        );
+        setUser(base64);
+        setIsLoggedIn(true);
+    }
+    */
     const SignIn = () => {
         const {setAuthModalType} = useContext(DataContext);
 

@@ -42,6 +42,7 @@ function Login() {
             setIsLoggedIn(true);
             setErrorPresent(false);
             setAuthModalType("Inactive");
+			localStorage.setItem("base64", base64);
         } catch (error) {
             console.log(error)
             setErrorPresent(true);
