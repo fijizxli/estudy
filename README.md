@@ -3,7 +3,6 @@ Online studying platform.
 
 # TODO :
 - [ ] write tests
-- [ ] fix css / use tailwind / bootstrap
 - [ ] switch from basic auth to jwt
 - [ ] search, filtering
 - [ ] add images to courses
