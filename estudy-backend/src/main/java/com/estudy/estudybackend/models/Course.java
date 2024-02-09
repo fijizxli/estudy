@@ -1,7 +1,6 @@
 package com.estudy.estudybackend.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -49,6 +48,12 @@ public class Course {
     public Course(String title, String description) {
         this.title= title;
         this.description = description;
+    }
+
+    public Course(String title, String description, String lecturer) {
+        this.title= title;
+        this.description = description;
+        this.lecturer = lecturer;
     }
 
     public Long getId() {
