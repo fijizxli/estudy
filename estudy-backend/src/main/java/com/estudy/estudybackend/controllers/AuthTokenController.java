@@ -5,8 +5,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class AuthTokenController {
-    private static final String AUTH_TOKEN_HEADER_NAME = "X-API-KEY";
-
     @Value("${api.key}")
     private String key;
 
