@@ -3,6 +3,7 @@ FROM docker.io/openjdk:17
 LABEL authors="fijizxli"
 MAINTAINER fijizxli
 
+ARG DB_HOST
 ARG DB_USER
 ARG DB_PASSWORD
 
@@ -11,6 +12,7 @@ ARG ADMIN_USERNAME
 ARG ADMIN_PASSWORD
 
 COPY target/estudy-backend-latest-pod.jar app.jar
+ENV DB_HOST=DB_HOST
 ENV DB_USER=DB_USER
 ENV DB_PASSWORD=DB_PASSWORD
 ENV API_KEY=API_KEY
