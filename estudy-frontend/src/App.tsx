@@ -20,7 +20,7 @@ function App() {
       <BrowserRouter>
         <Navbar/>
         <Routes>
-          <Route path = "/" element={<div></div>}/>;
+          <Route path = "/" element={<CourseList/>}/>;
           <Route path = "courses" element={<CourseList/>}/>;
           <Route path = "courses/create" element={<AddCourse/>}/>;
           <Route path = "courses/:courseId" element={<Course/>}/>;
