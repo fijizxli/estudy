@@ -1,0 +1,54 @@
+services:
+  estudy-backend:
+    container_name: estudy-backend
+    build:
+      context: ./estudy-backend
+      dockerfile: Dockerfile
+    image: estudy-backend:latest
+    networks: 
+      - net
+    depends_on:
+      - db
+    ports:
+      - 8080:8080
+    environment:
+      DB_HOST: db
+      DB_USER: db_user
+      DB_PASSWORD: password
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD: password
+      API_KEY: key
+
+  estudy-frontend:
+    container_name: estudy-frontend
+    build:
+      context: ./estudy-frontend
+      dockerfile: Dockerfile
+    image: estudy-frontend:latest
+    networks: 
+      - net
+    ports:
+      - 3000:3000
+      
+  db:
+    image: mysql:latest
+    container_name: db
+    volumes:
+      - estudy-data:/var/lib/mysql
+    networks: 
+      - net
+        #    ports:
+        #      - 3306:3306
+    expose:
+      - 3306
+    environment:
+      MYSQL_USER: db_user
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_PASSWORD: password
+      MYSQL_DATABASE: estudy
+
+volumes:
+  estudy-data:
+
+networks:
+  net:
