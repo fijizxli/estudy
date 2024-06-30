@@ -5,6 +5,9 @@ import com.estudy.estudybackend.models.User;
 import com.estudy.estudybackend.models.dtos.AddToCourseDto;
 import com.estudy.estudybackend.services.CourseService;
 import com.estudy.estudybackend.services.UserDetailServiceImpl;
+
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,6 +55,17 @@ public class UserController {
         try {
             User user = userService.findByUsername(username);
             return new ResponseEntity<User>(user, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
+        }
+    }
+
+    @GetMapping("/{username}/courses")
+    public ResponseEntity<Set<Course>> getUserCoursesByName(@PathVariable String username){
+        try {
+            User user = userService.findByUsername(username);
+            Set<Course> courses = user.getCourses();
+            return new ResponseEntity<>(courses, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
         }

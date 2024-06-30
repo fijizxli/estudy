@@ -12,6 +12,7 @@ import EditCourse from './components/EditCourse';
 import AddStudyMaterial from './components/AddStudyMaterial';
 import StudyMaterial from './components/StudyMaterial';
 import EditStudyMaterial from './components/EditStudyMaterial';
+import MyCourses from './components/MyCourses';
 
 function App() {
 
@@ -20,7 +21,8 @@ function App() {
       <BrowserRouter>
         <Navbar/>
         <Routes>
-          <Route path = "/" element={<CourseList/>}/>;
+          <Route path = "/" element={<MyCourses/>}/>;
+          <Route path = "mycourses" element={<MyCourses/>}/>;
           <Route path = "courses" element={<CourseList/>}/>;
           <Route path = "courses/create" element={<AddCourse/>}/>;
           <Route path = "courses/:courseId" element={<Course/>}/>;

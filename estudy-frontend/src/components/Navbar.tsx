@@ -58,7 +58,7 @@ export default function Navbar() {
                     <nav className="border-b-slate-950 fixed border-b-2 bg-white w-full">
                         <ul className='uppercase h-4 top-0 flex flex-row items-center m-auto list-none pt-8 pb-8 pl-2 pr-2'>
                             <li className="m-2 text-3xl ">
-                                <Link to="/courses"><CubeIcon className="h-8 w-8 hover:bg-black hover:text-white" /></Link>
+                                <Link to="/mycourses"><CubeIcon className="h-8 w-8 hover:bg-black hover:text-white" /></Link>
                             </li>
                             <li className="m-2 p-1 hover:border-solid hover:border-2 hover:border-black hover:rounded-md">
                                 <Link to="/courses"><b>Courses</b></Link>
@@ -84,7 +84,7 @@ export default function Navbar() {
                     <nav className="border-b-slate-950 fixed border-b-2 bg-white w-full">
                         <ul className='uppercase h-4 top-0 flex flex-row items-center m-auto list-none pt-8 pb-8 pl-2 pr-2'>
                             <li className="m-2 text-3xl ">
-                                <Link to="/courses"><CubeIcon className="h-8 w-8 hover:bg-black hover:text-white" /></Link>
+                                <Link to="/mycourses"><CubeIcon className="h-8 w-8 hover:bg-black hover:text-white" /></Link>
                             </li>
                             {/*
                             <li className="m-2 p-1 hover:border-solid hover:border-2 hover:border-black hover:rounded-md">
