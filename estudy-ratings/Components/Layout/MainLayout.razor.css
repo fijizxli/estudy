@@ -9,7 +9,7 @@ main {
 }
 
 .sidebar {
-    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    background-image: linear-gradient(180deg, hsl(210, 62%, 33%) 70%, #e3e3e3 80%);
 }
 
 .top-row {
@@ -43,6 +43,12 @@ main {
 
     .top-row ::deep a, .top-row ::deep .btn-link {
         margin-left: 0;
+    }
+    
+    .sidebar {
+        /*background-image: linear-gradient(180deg, hsl(210, 62%, 33%) 70%, green 80%);*/
+        background-image: none;
+        background-color: hsl(210, 62%, 33%);
     }
 }
 
