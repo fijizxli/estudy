@@ -16,9 +16,10 @@ public class Course {
     private Long id;
 
     private String title;
+
     private String description;
 
-    private String lecturer;
+    private Lecturer lecturer;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "course")
     private List<StudyMaterial> studyMaterials = new ArrayList<>();
@@ -30,7 +31,7 @@ public class Course {
     public Course() {
     }
 
-    public Course(String title, String description, String lecturer, List<StudyMaterial> studyMaterials, Set<User> students) {
+    public Course(String title, String description, Lecturer lecturer, List<StudyMaterial> studyMaterials, Set<User> students) {
         this.title = title;
         this.description = description;
         this.lecturer = lecturer;
@@ -38,7 +39,7 @@ public class Course {
         this.students = students;
     }
 
-    public Course(String title, String description, String lecturer, List<StudyMaterial> studyMaterials) {
+    public Course(String title, String description, Lecturer lecturer, List<StudyMaterial> studyMaterials) {
         this.title = title;
         this.description = description;
         this.lecturer = lecturer;
@@ -50,7 +51,7 @@ public class Course {
         this.description = description;
     }
 
-    public Course(String title, String description, String lecturer) {
+    public Course(String title, String description, Lecturer lecturer) {
         this.title= title;
         this.description = description;
         this.lecturer = lecturer;
@@ -80,11 +81,11 @@ public class Course {
         this.description = description;
     }
 
-    public String getLecturer() {
+    public Lecturer getLecturer() {
         return lecturer;
     }
 
-    public void setLecturer(String lecturer) {
+    public void setLecturer(Lecturer lecturer) {
         this.lecturer = lecturer;
     }
 

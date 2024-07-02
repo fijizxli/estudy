@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.estudy.estudybackend.models.Course;
+import com.estudy.estudybackend.models.Lecturer;
 import com.estudy.estudybackend.models.Role;
 import com.estudy.estudybackend.models.StudyMaterial;
 import com.estudy.estudybackend.models.User;
@@ -18,6 +19,7 @@ import com.estudy.estudybackend.repositories.CourseRepository;
 import com.estudy.estudybackend.repositories.RoleRepository;
 import com.estudy.estudybackend.repositories.StudyMaterialRepository;
 import com.estudy.estudybackend.repositories.UserRepository;
+import com.estudy.estudybackend.repositories.LecturerRepository;
 
 @SpringBootApplication
 public class EstudyBackendApplication {
@@ -30,36 +32,60 @@ public class EstudyBackendApplication {
     RoleRepository roleRepository;
 
     @Autowired
+    LecturerRepository lecturerRepository;
+
+    @Autowired
     CourseRepository courseRepository;
 
     @Autowired
     StudyMaterialRepository studyMaterialRepository;
 
     public void genSampleData(){
+
+        Lecturer l1 = new Lecturer(
+            "Emily",
+            "emily@gmail.com"
+        );
+
+        Lecturer l2 = new Lecturer(
+            "John Joe",
+            "johnjoeprof99@gmail.com"
+        );
+
+        Lecturer l3 = new Lecturer(
+            "Goofy Goober",
+            "goober97@gmail.com"
+        );
+
+        lecturerRepository.save(l1);
+        lecturerRepository.save(l2);
+        lecturerRepository.save(l3);
+
         Course c1 = new Course(
             "Introduction to Computer Science", 
             "This course provides an overview of fundamental concepts in computer science, including algorithms, data structures, and programming languages",
-            "Prof. Emily Johnson");
+            l1);
         Course c2 = new Course(
             "Data Science Fundamentals", 
             "Explore data analysis, visualization, and machine learning techniques in this hands-on course",
-            "Dr. Alex Rodriguez");
+            l2);
         Course c3 = new Course(
             "Web Development Basics", 
             "Learn HTML, CSS, and JavaScript to build interactive web applications.",
-            "Prof. David Lee");
+            l2);
         Course c4 = new Course(
             "Introduction to Psychology", 
             "Understand the basics of human behavior, cognition, and mental processes.",
-            "Dr. Maria Hernandez");
+            l1);
         Course c5 = new Course(
             "Financial Accounting", 
             "Explore accounting principles, financial statements, and business transactions.",
-            "Prof. Mark Davis");
+            l1);
         Course c6 = new Course(
             "Art History: Renaissance to Modern Era", 
             "Dive into the world of art, from the Renaissance period to contemporary art movements.",
-            "Dr. Sofia Martinez");
+            l3);
+
         courseRepository.save(c1);
         courseRepository.save(c2);
         courseRepository.save(c3);
