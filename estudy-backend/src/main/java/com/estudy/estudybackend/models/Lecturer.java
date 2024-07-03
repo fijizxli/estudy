@@ -21,9 +21,6 @@ public class Lecturer{
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "lecturer")
     private List<Course> courses = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "lecturer")
-    private List<String> comments = new ArrayList<>();
-
     public Lecturer() {
     }
 
