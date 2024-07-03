@@ -5,11 +5,17 @@ export type User  = {
     isLoggedIn: boolean| null;
 }
 
+export type Lecturer = {
+    id: number;
+    name: string | null;
+    emailAddress: string | null;
+}
+
 export type Course = {
     id: number | null;
     title: string | null;
     description: string | null;
-    lecturer: string | null;
+    lecturer: Lecturer | null;
     studyMaterials: [];
 }
 
