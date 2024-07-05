@@ -29,7 +29,7 @@ export default function CourseList() {
                 <Card key={course.id} className="flex flex-col m-auto p-auto mt-4 mb-4 p-2 w-80 break-words mb hover:bg-slate-200">
                     <CardHeader>
                     <CardTitle className="hover:underline"><Link to={`/courses/${course.id}`}>{course.title}</Link></CardTitle>
-                    <CardDescription>{course.lecturer?.name}</CardDescription>
+                    <CardDescription>{course.lecturerName}</CardDescription>
                     </CardHeader>
                     <CardContent className=" h-full">
                     <p>{course.description}</p>

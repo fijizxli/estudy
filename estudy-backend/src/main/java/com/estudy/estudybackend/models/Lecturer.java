@@ -4,10 +4,14 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.validation.constraints.Email;
 
 @Entity
 @Table(name="lecturers")
+@JsonIgnoreProperties("courses")
 public class Lecturer{
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -51,7 +55,8 @@ public class Lecturer{
         this.name = name;
     }
 
-    public List<Course> courses() {
+    @JsonManagedReference
+    public List<Course> getCourses() {
         return courses;
     }
 
@@ -69,11 +74,11 @@ public class Lecturer{
         }
         sb.append("}");
 
-        return "Course{" +
+        return "Lecturer{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", email address='" + emailAddress+ '\'' +
-                ", courses:'" + courses + '\'' +
+                ", courses='" + courses + '\'' +
                 '}';
     }
 

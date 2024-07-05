@@ -1,6 +1,7 @@
 package com.estudy.estudybackend.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
@@ -21,9 +22,22 @@ public class Course {
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "lecturer_id")
+    @JoinColumn(name="lecturer_id")
     @JsonIgnore
     private Lecturer lecturer;
+
+    @Transient
+    @JsonProperty("lecturerName")
+    private String lecturerName;
+
+
+    @PostLoad
+    @PostPersist
+    @PostUpdate
+    public void populateLecturer() {
+        if (lecturer != null)
+            this.lecturerName = lecturer.getName();
+    }
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "course")
     private List<StudyMaterial> studyMaterials = new ArrayList<>();

@@ -89,7 +89,7 @@ export default function Course() {
             <div className="pt-10">
                 <Label className="text-xl flex m-auto pt-20 pb-10 justify-center text-center"><b>{course?.title}</b></Label>
                 <Label className="text-md flex pb-10 justify-center">{course?.description}</Label>
-                <Label className="text-sm flex pb-4"><i>Lecturer: {course?.lecturer?.name}</i></Label>
+                <Label className="text-sm flex pb-4"><i>Lecturer: {course?.lecturerName}</i></Label>
                 {isPhone ? (
                 <div className="grid grid-cols-3 m-auto w-40">
                     {isEnrolled ?(

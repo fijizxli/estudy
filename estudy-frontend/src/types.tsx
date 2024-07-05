@@ -15,7 +15,7 @@ export type Course = {
     id: number | null;
     title: string | null;
     description: string | null;
-    lecturer: Lecturer | null;
+    lecturerName: string | null;
     studyMaterials: [];
 }
 
