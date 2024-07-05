@@ -23,7 +23,6 @@ public class CourseService {
     private EntityManager entityManager;
 
     public Course getCourseById(Long courseId){
-
         return courseRepository.findById(courseId).orElse(null);
     }
 
