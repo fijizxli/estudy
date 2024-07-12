@@ -1,4 +1,4 @@
-using estudy_ratings.Components;
+using estudyRatings.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
