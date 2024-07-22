@@ -3,8 +3,19 @@
 
 <PageTitle>Search</PageTitle>
 
+<h1>Search</h1>
+<br/>
+<InputText @bind-Value="searchTerm"></InputText>
+<button class="btn btn-primary" @onclick="SearchLecturer">Search</button>
+
+<hr/>
+<p>You've searched for:<i>@searchTerm</i></p>
 
 @code {
-
+    private string searchTerm= "";
+    private void SearchLecturer()
+    {
+        Console.WriteLine($"Choosen search field: {searchTerm}");
+    }
 }
 
