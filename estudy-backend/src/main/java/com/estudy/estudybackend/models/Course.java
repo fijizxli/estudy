@@ -24,19 +24,19 @@ public class Course {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="lecturer_id")
     @JsonIgnore
-    private Lecturer lecturer;
+    private User lecturer;
 
     @Transient
     @JsonProperty("lecturerName")
     private String lecturerName;
 
-
     @PostLoad
     @PostPersist
     @PostUpdate
     public void populateLecturer() {
-        if (lecturer != null)
-            this.lecturerName = lecturer.getName();
+        if (lecturer != null){
+            this.lecturerName = lecturer.getUsername();
+        }
     }
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "course")
@@ -49,7 +49,7 @@ public class Course {
     public Course() {
     }
 
-    public Course(String title, String description, Lecturer lecturer, List<StudyMaterial> studyMaterials, Set<User> students) {
+    public Course(String title, String description, User lecturer, List<StudyMaterial> studyMaterials, Set<User> students) {
         this.title = title;
         this.description = description;
         this.lecturer = lecturer;
@@ -57,7 +57,7 @@ public class Course {
         this.students = students;
     }
 
-    public Course(String title, String description, Lecturer lecturer, List<StudyMaterial> studyMaterials) {
+    public Course(String title, String description, User lecturer, List<StudyMaterial> studyMaterials) {
         this.title = title;
         this.description = description;
         this.lecturer = lecturer;
@@ -69,7 +69,7 @@ public class Course {
         this.description = description;
     }
 
-    public Course(String title, String description, Lecturer lecturer) {
+    public Course(String title, String description, User lecturer) {
         this.title= title;
         this.description = description;
         this.lecturer = lecturer;
@@ -88,7 +88,7 @@ public class Course {
     }
 
     public void setTitle(String title) {
-        this.title= title;
+        this.title = title;
     }
 
     public String getDescription() {
@@ -99,12 +99,20 @@ public class Course {
         this.description = description;
     }
 
-    public Lecturer getLecturer() {
+    public User getLecturer() {
         return lecturer;
     }
 
-    public void setLecturer(Lecturer lecturer) {
+    public void setLecturer(User lecturer) {
         this.lecturer = lecturer;
+    }
+
+    public String getLecturerName() {
+        return lecturerName;
+    }
+
+    public void setLecturerName(String lecturerName) {
+        this.lecturerName = lecturerName;
     }
 
     public List<StudyMaterial> getStudyMaterials() {
@@ -138,6 +146,7 @@ public class Course {
                 ", title='" + title+ '\'' +
                 ", description='" + description + '\'' +
                 ", lecturer='" + lecturer + '\'' +
+                ", lecturerName='" + lecturerName + '\'' +
                 ", study materials:'" + studyMaterials + '\'' +
                 '}';
     }

@@ -3,6 +3,7 @@ package com.estudy.estudybackend.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import org.springframework.lang.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,6 +19,14 @@ public class User implements UserDetails {
 
     @Column(unique = true)
     private String username;
+
+    @Column(unique = true)
+    @Nullable
+    private String emailAddress;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "lecturer")
+    @Nullable
+    private List<Course> coursesTaught = new ArrayList<>();
 
     @JsonIgnore
     private String password;
@@ -54,11 +63,17 @@ public class User implements UserDetails {
         this.roles = roles;
     }
 
-
     public User(String username, String password, Set<Role> roles) {
         this.username = username;
         this.password = password;
         this.roles = roles;
+    }
+
+    public User(String username, String password, Set<Role> roles, String emailAddress) {
+        this.username = username;
+        this.password = password;
+        this.roles = roles;
+        this.emailAddress = emailAddress;
     }
 
     public User(String username, String password, Set<Role> roles, Set<Course> courses) {
@@ -66,6 +81,14 @@ public class User implements UserDetails {
         this.password = password;
         this.roles = roles;
         this.courses = courses;
+    }
+
+    public User(String username, String password, Set<Role> roles, Set<Course> courses, List<Course> coursesTaught) {
+        this.username = username;
+        this.password = password;
+        this.roles = roles;
+        this.courses = courses;
+        this.coursesTaught = coursesTaught;
     }
 
     public User() {
@@ -126,10 +149,8 @@ public class User implements UserDetails {
 
     @Override
     public String toString() {
-        return "User{" +
-                "username='" + username + '\'' +
-                ", password='" + password + '\'' + "roles: \n" + roles +
-                '}';
+        return username + "(" + emailAddress + ")";
+
     }
 
     @Override

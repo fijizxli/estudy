@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.estudy.estudybackend.models.Course;
-import com.estudy.estudybackend.models.Lecturer;
 import com.estudy.estudybackend.models.Role;
 import com.estudy.estudybackend.models.StudyMaterial;
 import com.estudy.estudybackend.models.User;
@@ -19,7 +18,6 @@ import com.estudy.estudybackend.repositories.CourseRepository;
 import com.estudy.estudybackend.repositories.RoleRepository;
 import com.estudy.estudybackend.repositories.StudyMaterialRepository;
 import com.estudy.estudybackend.repositories.UserRepository;
-import com.estudy.estudybackend.repositories.LecturerRepository;
 
 @SpringBootApplication
 public class EstudyBackendApplication {
@@ -32,66 +30,34 @@ public class EstudyBackendApplication {
     RoleRepository roleRepository;
 
     @Autowired
-    LecturerRepository lecturerRepository;
-
-    @Autowired
     CourseRepository courseRepository;
 
     @Autowired
     StudyMaterialRepository studyMaterialRepository;
 
+    @Autowired
+    UserRepository userRepository;
+
     public void genSampleData(){
-
-        Lecturer l1 = new Lecturer(
-            "Emily",
-            "emily@gmail.com"
-        );
-
-        Lecturer l2 = new Lecturer(
-            "John Joe",
-            "johnjoeprof99@gmail.com"
-        );
-
-        Lecturer l3 = new Lecturer(
-            "Goofy Goober",
-            "goober97@gmail.com"
-        );
-
-        lecturerRepository.save(l1);
-        lecturerRepository.save(l2);
-        lecturerRepository.save(l3);
+        User test_lecturer = userRepository.findByUsername("John");
 
         Course c1 = new Course(
             "Introduction to Computer Science", 
             "This course provides an overview of fundamental concepts in computer science, including algorithms, data structures, and programming languages",
-            l1);
+            test_lecturer);
         Course c2 = new Course(
             "Data Science Fundamentals", 
             "Explore data analysis, visualization, and machine learning techniques in this hands-on course",
-            l2);
+            test_lecturer);
         Course c3 = new Course(
             "Web Development Basics", 
             "Learn HTML, CSS, and JavaScript to build interactive web applications.",
-            l2);
-        Course c4 = new Course(
-            "Introduction to Psychology", 
-            "Understand the basics of human behavior, cognition, and mental processes.",
-            l1);
-        Course c5 = new Course(
-            "Financial Accounting", 
-            "Explore accounting principles, financial statements, and business transactions.",
-            l1);
-        Course c6 = new Course(
-            "Art History: Renaissance to Modern Era", 
-            "Dive into the world of art, from the Renaissance period to contemporary art movements.",
-            l3);
+            test_lecturer);
 
         courseRepository.save(c1);
         courseRepository.save(c2);
         courseRepository.save(c3);
-        courseRepository.save(c4);
-        courseRepository.save(c5);
-        courseRepository.save(c6);
+
 
         StudyMaterial c1_s1 = new StudyMaterial(c1,
             "Introduction to Algorithms",
@@ -105,23 +71,12 @@ public class EstudyBackendApplication {
         StudyMaterial c3_s1 = new StudyMaterial(c3,
             "HTML and CSS: Design and Build Websites",
             "A beginner-friendly book for web design.");
-        StudyMaterial c4_s1 = new StudyMaterial(c4,
-            "Psychology: Themes and Variations",
-            "A widely used textbook covering various psychological theories.");
-        StudyMaterial c5_s1 = new StudyMaterial(c5,
-            "Financial Accounting: Tools for Business Decision Making",
-            "A comprehensive guide to financial accounting concepts.");
-        StudyMaterial c6_s1 = new StudyMaterial(c6,
-            "Gardner’s Art through the Ages",
-            "A classic art history textbook.");
+
         studyMaterialRepository.save(c1_s1);
         studyMaterialRepository.save(c1_s2);
         studyMaterialRepository.save(c2_s1);
         studyMaterialRepository.save(c3_s1);
-        studyMaterialRepository.save(c4_s1);
-        studyMaterialRepository.save(c5_s1);
-        studyMaterialRepository.save(c6_s1);
-    }
+   }
 
     @Value("${admin.username}")
     private String adminUsername;
@@ -142,14 +97,29 @@ public class EstudyBackendApplication {
             roleRepository.save(userRole);
         }
 
+        if (roleRepository.findByName("LECTURER") == null){
+            Role lecturerRole = new Role("LECTURER");
+            roleRepository.save(lecturerRole);
+        }
+
         return args -> {
             if (userRepository.findByUsername(adminUsername) == null){
-                genSampleData();
                 User admin = new User(adminUsername,
                 encoder.encode(adminPassword),
                 Set.of(roleRepository.findByName("admin")));
                 userRepository.save(admin);
             }
+
+            if (userRepository.findByUsername("John") == null){
+                User test_lecturer= new User(
+                "John", 
+                encoder.encode("john9999"), 
+                Set.of(roleRepository.findByName("LECTURER")), 
+                "john@john.joe");
+                userRepository.save(test_lecturer);
+            }
+
+            genSampleData();
         };
     }
 }
