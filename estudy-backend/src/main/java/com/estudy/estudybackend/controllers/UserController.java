@@ -1,13 +1,13 @@
 package com.estudy.estudybackend.controllers;
 
 import com.estudy.estudybackend.models.Course;
+import com.estudy.estudybackend.models.Role;
 import com.estudy.estudybackend.models.User;
 import com.estudy.estudybackend.models.dtos.AddToCourseDto;
+import com.estudy.estudybackend.repositories.RoleRepository;
 import com.estudy.estudybackend.services.CourseService;
 import com.estudy.estudybackend.services.UserDetailServiceImpl;
-
 import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     @Autowired
     UserDetailServiceImpl userService;
+
+    @Autowired
+    RoleRepository roleRepository;
 
     @Autowired
     CourseService courseService;
@@ -55,6 +58,18 @@ public class UserController {
         try {
             User user = userService.findByUsername(username);
             return new ResponseEntity<User>(user, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
+        }
+    }
+
+    @PreAuthorize("hasRole('ROLE_LECTURER') or hasRole('ROLE_ADMIN')")
+    @GetMapping("/{roleString}")
+    public ResponseEntity<User> getLecturers(@PathVariable String roleString){
+        try {
+            Role role = roleRepository.findByName(roleString);
+            User users = userService.findByRole(role);
+            return new ResponseEntity<User>(users, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
         }
