@@ -1,15 +1,30 @@
 package com.estudy.estudybackend.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class User implements UserDetails {
@@ -40,53 +55,46 @@ public class User implements UserDetails {
     @JsonIgnoreProperties("students")
     private Set<Course> courses;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private Set<Role> roles;
+    private Role role;
 
-    public Set<Role> getRoles() {
-        return roles;
+    public Role getRole() {
+        return role;
     }
 
-    @Override
+    public void setRoles(Role role) {
+        this.role = role;
+    }
+
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return  getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
-                .collect(Collectors.toSet());
+        List<GrantedAuthority> list = new ArrayList<GrantedAuthority>();
+        list.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
+        return list;
     }
 
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
-    }
-
-    public User(String username, String password, Set<Role> roles) {
+    public User(String username, String password, Role role) {
         this.username = username;
         this.password = password;
-        this.roles = roles;
+        this.role = role;
     }
 
-    public User(String username, String password, Set<Role> roles, String emailAddress) {
+    public User(String username, String password, Role role, String emailAddress) {
         this.username = username;
         this.password = password;
-        this.roles = roles;
+        this.role = role;
         this.emailAddress = emailAddress;
     }
 
-    public User(String username, String password, Set<Role> roles, Set<Course> courses) {
+    public User(String username, String password, Role role, Set<Course> courses) {
         this.username = username;
         this.password = password;
-        this.roles = roles;
+        this.role = role;
         this.courses = courses;
     }
 
-    public User(String username, String password, Set<Role> roles, Set<Course> courses, List<Course> coursesTaught) {
+    public User(String username, String password, Role role, Set<Course> courses, List<Course> coursesTaught) {
         this.username = username;
         this.password = password;
-        this.roles = roles;
+        this.role = role;
         this.courses = courses;
         this.coursesTaught = coursesTaught;
     }
@@ -163,6 +171,6 @@ public class User implements UserDetails {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, password, roles);
+        return Objects.hash(id, username, password, role);
     }
 }

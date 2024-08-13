@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
-
 @Service
 public class RegistrationService {
     @Autowired
@@ -28,7 +26,7 @@ public class RegistrationService {
 
         if (passwordsMatch && !userExists) {
             Role role = roleRepository.findByName("USER");
-            User newUser = new User(user.getUsername(), encoder.encode(user.getPassword()), Set.of(role));
+            User newUser = new User(user.getUsername(), encoder.encode(user.getPassword()), role);
             userRepository.save(newUser);
         }else {
             if (!passwordsMatch) {

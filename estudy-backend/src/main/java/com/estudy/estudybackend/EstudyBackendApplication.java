@@ -1,7 +1,5 @@
 package com.estudy.estudybackend;
 
-import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -106,7 +104,7 @@ public class EstudyBackendApplication {
             if (userRepository.findByUsername(adminUsername) == null){
                 User admin = new User(adminUsername,
                 encoder.encode(adminPassword),
-                Set.of(roleRepository.findByName("admin")));
+                roleRepository.findByName("admin"));
                 userRepository.save(admin);
             }
 
@@ -114,7 +112,7 @@ public class EstudyBackendApplication {
                 User test_lecturer= new User(
                 "John", 
                 encoder.encode("john9999"), 
-                Set.of(roleRepository.findByName("LECTURER")), 
+                roleRepository.findByName("LECTURER"), 
                 "john@john.joe");
                 userRepository.save(test_lecturer);
             }
