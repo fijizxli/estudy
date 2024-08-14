@@ -1,7 +1,12 @@
 package com.estudy.estudybackend.controllers;
 
 import com.estudy.estudybackend.models.Course;
+import com.estudy.estudybackend.models.Role;
+import com.estudy.estudybackend.models.User;
+import com.estudy.estudybackend.repositories.RoleRepository;
 import com.estudy.estudybackend.services.CourseService;
+import com.estudy.estudybackend.services.UserDetailServiceImpl;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +21,12 @@ public class CourseController {
 
     @Autowired
     private CourseService cs;
+
+    @Autowired
+    private RoleRepository roleRepository;
+
+    @Autowired
+    private UserDetailServiceImpl userService;
 
     public CourseController(CourseService cs) {
         this.cs = cs;
@@ -39,6 +50,22 @@ public class CourseController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+    @GetMapping("/lecturer/{lecturerName}")
+    public ResponseEntity<List<Course>> getCoursesByLecturerName(@PathVariable String lecturerName){
+        User lecturer = userService.findByUsername(lecturerName);
+        if (lecturer != null){
+            Role lecturerRole = roleRepository.findByName("LECTURER");
+            if (lecturer.getRole().equals(lecturerRole)){
+                List<Course> courses = cs.getCoursesByLecturer(lecturer);
+                if (courses != null){
+                    return new ResponseEntity<>(courses, HttpStatus.OK);
+                } 
+            }
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/create")
     public ResponseEntity<Void> createCourse(@RequestBody Course c){
@@ -57,14 +84,19 @@ public class CourseController {
     @PatchMapping("/{courseId}")
     public ResponseEntity<Void> patchCourse(@PathVariable Long courseId, @RequestBody Course course){
         Course existingCourse = cs.getCourseById(courseId);
+
         if (course.getTitle() != null){
             existingCourse.setTitle(course.getTitle());
         }
         if (course.getDescription() != null){
             existingCourse.setDescription(course.getDescription());
         }
-        if (course.getLecturer() != null){
-            existingCourse.setLecturer(course.getLecturer());
+
+        if (course.getLecturerName() != null){
+            User user = userService.findByUsername(course.getLecturerName());
+            if (user.getRole().equals(existingCourse.getLecturer().getRole())){
+                existingCourse.setLecturer(user);
+            }
         }
         cs.saveCourse(existingCourse);
         return new ResponseEntity<>(HttpStatus.OK);

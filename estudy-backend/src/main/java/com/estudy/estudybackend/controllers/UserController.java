@@ -65,11 +65,11 @@ public class UserController {
 
     @PreAuthorize("hasRole('ROLE_LECTURER') or hasRole('ROLE_ADMIN')")
     @GetMapping("/{roleString}")
-    public ResponseEntity<User> getLecturers(@PathVariable String roleString){
+    public ResponseEntity<Set<User>> getLecturers(@PathVariable String roleString){
         try {
             Role role = roleRepository.findByName(roleString);
-            User users = userService.findByRole(role);
-            return new ResponseEntity<User>(users, HttpStatus.OK);
+            Set<User> users = userService.findByRole(role);
+            return new ResponseEntity<Set<User>>(users, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
         }

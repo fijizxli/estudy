@@ -1,14 +1,9 @@
 export type User  = {
-    username: string | null;
+    username: string;
+    emailAddress: string | null;
     auth: string | null;
     id: number | null;
     isLoggedIn: boolean| null;
-}
-
-export type Lecturer = {
-    id: number;
-    name: string | null;
-    emailAddress: string | null;
 }
 
 export type Course = {

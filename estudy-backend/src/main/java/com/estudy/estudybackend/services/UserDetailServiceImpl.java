@@ -7,6 +7,9 @@ import com.estudy.estudybackend.repositories.CourseRepository;
 import com.estudy.estudybackend.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+
+import java.util.Set;
+
 import javax.management.relation.RoleNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -35,7 +38,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
         return userRepository.findByUsername(username);
     }
 
-    public User findByRole(Role role) throws RoleNotFoundException {
+    public Set<User> findByRole(Role role) throws RoleNotFoundException {
         return userRepository.findByRole(role);
     }
 

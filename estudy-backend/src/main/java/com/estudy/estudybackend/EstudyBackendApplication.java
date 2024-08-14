@@ -113,7 +113,16 @@ public class EstudyBackendApplication {
                 "John", 
                 encoder.encode("john9999"), 
                 roleRepository.findByName("LECTURER"), 
-                "john@john.joe");
+                "john@estudy.tv");
+                userRepository.save(test_lecturer);
+            }
+
+            if (userRepository.findByUsername("Joe") == null){
+                User test_lecturer = new User(
+                "Joe", 
+                encoder.encode("john9999"), 
+                roleRepository.findByName("LECTURER"), 
+                "joe@estudy.tv");
                 userRepository.save(test_lecturer);
             }
 

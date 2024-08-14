@@ -2,6 +2,7 @@ package com.estudy.estudybackend.services;
 
 import com.estudy.estudybackend.models.Course;
 import com.estudy.estudybackend.models.StudyMaterial;
+import com.estudy.estudybackend.models.User;
 import com.estudy.estudybackend.repositories.CourseRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
@@ -24,6 +25,10 @@ public class CourseService {
 
     public Course getCourseById(Long courseId){
         return courseRepository.findById(courseId).orElse(null);
+    }
+
+    public List<Course> getCoursesByLecturer(User lecturer){
+        return courseRepository.findByLecturer(lecturer);
     }
 
     public List<Course> getCourses() {
