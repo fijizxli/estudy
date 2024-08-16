@@ -69,6 +69,8 @@ public class CourseController {
     @PreAuthorize("hasRole('ROLE_LECTURER') or hasRole('ROLE_ADMIN')")
     @PostMapping("/create")
     public ResponseEntity<Void> createCourse(@RequestBody Course c){
+        User lecturer = userService.findByUsername(c.getLecturerName());
+        c = new Course(c.getTitle(), c.getDescription(), lecturer);
         cs.saveCourse(c);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
