@@ -3,6 +3,7 @@ export type User  = {
     emailAddress: string | null;
     auth: string | null;
     id: number | null;
+    role: string;
     isLoggedIn: boolean| null;
 }
 

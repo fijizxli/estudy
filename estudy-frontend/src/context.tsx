@@ -1,14 +1,15 @@
 import {createContext, useContext, useState, ReactNode} from "react";
 
 interface User {
-    username: string | null;
+    username: string;
     auth: string | null;
     id: number | null;
     isLoggedIn: boolean | null;
+    role: string;
 }
 
 interface AuthContextProps {
-    user: User | null;
+    user: User;
     authModalType: string | null;
     setModalType: (modalType: string) => void;
     login: (user: User) => void;
