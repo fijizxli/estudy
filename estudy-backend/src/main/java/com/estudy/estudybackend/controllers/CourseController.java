@@ -32,14 +32,14 @@ public class CourseController {
         this.cs = cs;
     }
 
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_LECTURER') or hasRole('ROLE_ADMIN')")
     @GetMapping("")
     public ResponseEntity<List<Course>> getCourses(){
         List<Course> courses = cs.getCourses();
         return new ResponseEntity<>(courses, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_LECTURER') or hasRole('ROLE_ADMIN')")
     @GetMapping("/{courseId}")
     public ResponseEntity<Course> getCourseById(@PathVariable Long courseId){
         Course course = cs.getCourseById(courseId);
@@ -50,7 +50,7 @@ public class CourseController {
         }
     }
 
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_LECTURER') or hasRole('ROLE_ADMIN')")
     @GetMapping("/lecturer/{lecturerName}")
     public ResponseEntity<List<Course>> getCoursesByLecturerName(@PathVariable String lecturerName){
         User lecturer = userService.findByUsername(lecturerName);
@@ -66,7 +66,7 @@ public class CourseController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_LECTURER') or hasRole('ROLE_ADMIN')")
     @PostMapping("/create")
     public ResponseEntity<Void> createCourse(@RequestBody Course c){
         cs.saveCourse(c);
@@ -80,7 +80,7 @@ public class CourseController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_LECTURER') or hasRole('ROLE_ADMIN')")
     @PatchMapping("/{courseId}")
     public ResponseEntity<Void> patchCourse(@PathVariable Long courseId, @RequestBody Course course){
         Course existingCourse = cs.getCourseById(courseId);
