@@ -58,8 +58,6 @@ public class CourseService {
             );
         }
 
-        System.out.println("service");
-        System.out.println(courses);
         return courses;
     }
 
