@@ -20,14 +20,6 @@ public class StudyMaterialController {
     @Autowired
     private CourseService courseService;
 
-    /*
-    @GetMapping("/m")
-    public ResponseEntity<List<StudyMaterial>> getStudyMaterials(){
-        List<StudyMaterial> studyMaterials = studyMaterialService.getStudyMaterials();
-        return new ResponseEntity<>(studyMaterials, HttpStatus.OK);
-    }
-    */
-
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
     @GetMapping("/{studyMaterialId}")
     public ResponseEntity<StudyMaterial> getStudyMaterialById(@PathVariable Long courseId, @PathVariable Long studyMaterialId) {
