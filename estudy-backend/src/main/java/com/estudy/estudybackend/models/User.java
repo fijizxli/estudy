@@ -46,7 +46,7 @@ public class User implements UserDetails {
     @JsonIgnore
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "courses_user",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -134,7 +134,6 @@ public class User implements UserDetails {
         return true;
     }
 
-
     public void setUsername(String username) {
         this.username = username;
     }
@@ -172,5 +171,25 @@ public class User implements UserDetails {
     @Override
     public int hashCode() {
         return Objects.hash(id, username, password, role);
+    }
+
+    public String getEmailAddress() {
+        return emailAddress;
+    }
+
+    public void setEmailAddress(String emailAddress) {
+        this.emailAddress = emailAddress;
+    }
+
+    public List<Course> getCoursesTaught() {
+        return coursesTaught;
+    }
+
+    public void setCoursesTaught(List<Course> coursesTaught) {
+        this.coursesTaught = coursesTaught;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 }
