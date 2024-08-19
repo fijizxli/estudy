@@ -82,6 +82,9 @@ public class EstudyBackendApplication {
     @Value("${admin.password}")
     private String adminPassword;
 
+    @Value("${dataGen}")
+    private boolean dataGen;
+
     @Bean
     public CommandLineRunner dataLoader(UserRepository userRepository, PasswordEncoder encoder){
 
@@ -126,7 +129,9 @@ public class EstudyBackendApplication {
                 userRepository.save(test_lecturer);
             }
 
-            genSampleData();
+            if (dataGen) {
+                genSampleData();
+            }
         };
     }
 }
