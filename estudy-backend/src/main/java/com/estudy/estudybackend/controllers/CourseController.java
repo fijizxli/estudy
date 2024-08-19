@@ -3,6 +3,7 @@ package com.estudy.estudybackend.controllers;
 import com.estudy.estudybackend.models.Course;
 import com.estudy.estudybackend.models.Role;
 import com.estudy.estudybackend.models.User;
+import com.estudy.estudybackend.models.dtos.CourseDto;
 import com.estudy.estudybackend.repositories.RoleRepository;
 import com.estudy.estudybackend.services.CourseService;
 import com.estudy.estudybackend.services.UserDetailServiceImpl;
@@ -34,8 +35,8 @@ public class CourseController {
 
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_LECTURER') or hasRole('ROLE_ADMIN')")
     @GetMapping("")
-    public ResponseEntity<List<Course>> getCourses(){
-        List<Course> courses = cs.getCourses();
+    public ResponseEntity<List<CourseDto>> getCourses(){
+        List<CourseDto> courses = cs.getCourses();
         return new ResponseEntity<>(courses, HttpStatus.OK);
     }
 
