@@ -20,7 +20,7 @@ public class StudyMaterialController {
     @Autowired
     private CourseService courseService;
 
-    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_LECTURER') or hasRole('ROLE_ADMIN')")
     @GetMapping("/{studyMaterialId}")
     public ResponseEntity<StudyMaterial> getStudyMaterialById(@PathVariable Long courseId, @PathVariable Long studyMaterialId) {
         Course course = courseService.getCourseById(courseId);
@@ -35,10 +35,9 @@ public class StudyMaterialController {
         }
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_LECTURER') or hasRole('ROLE_ADMIN')")
     @PostMapping("/create")
     public ResponseEntity<Course> createStudyMaterial(@PathVariable Long courseId, @RequestBody StudyMaterial studyMaterial){
-
         try {
             Course course = courseService.getCourseById(courseId);
             if (course == null){
@@ -54,7 +53,7 @@ public class StudyMaterialController {
 
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_LECTURER') or hasRole('ROLE_ADMIN')")
     @PatchMapping("/{studyMaterialId}")
     public ResponseEntity<Course> updateStudyMaterial(@PathVariable Long studyMaterialId, @RequestBody StudyMaterial studyMaterial){
         StudyMaterial existingStudyMaterial = studyMaterialService.getStudyMaterialById(studyMaterialId);
