@@ -1,10 +1,10 @@
 export type User  = {
     username: string;
-    emailAddress: string | null;
-    auth: string | null;
-    id: number | null;
+    emailAddress: string;
+    auth: string;
+    id: number;
     role: string;
-    isLoggedIn: boolean| null;
+    isLoggedIn: boolean;
 }
 
 export type Course = {
