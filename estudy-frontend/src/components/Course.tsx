@@ -91,23 +91,47 @@ export default function Course() {
                 <Label className="text-md flex pb-10 justify-center">{course?.description}</Label>
                 <Label className="text-sm flex pb-4"><i>Lecturer: {course?.lecturerName}</i></Label>
                 {isPhone ? (
-                <div className="grid grid-cols-3 m-auto w-40">
-                    {isEnrolled ?(
-                        <Button className="m-2 h-9 w-9 p-0" onClick={leaveCourse}>
-                            <Cross2Icon className="h-6 w-6"/>
+                    <div>
+                    {user.role === "ADMIN" ?
+                    <div className="grid grid-cols-3 m-auto w-max">
+                        {isEnrolled ?(
+                            <Button className="m-2 h-9 w-9 p-0" onClick={leaveCourse}>
+                                <Cross2Icon className="h-6 w-6"/>
+                            </Button>
+                        ): (
+                            <Button className="m-2 h-9 w-9 p-0" onClick={joinCourse}>
+                                <PlusIcon className="h-6 w-6"/>
+                            </Button>
+                        )}
+                        <Button className="m-2 h-9 w-9 p-0" asChild>
+                            <Link to={`/courses/edit/${course?.id}`}><Pencil1Icon className="h-6 w-6"/></Link>
                         </Button>
-                    ): (
-                        <Button className="m-2 h-9 w-9 p-0" onClick={joinCourse}>
-                            <PlusIcon className="h-6 w-6"/>
+                        <Button className="m-2 h-9 w-9 p-0" variant="destructive" onClick={deleteCourse}>
+                            <TrashIcon className="h-6 w-6"/>
                         </Button>
-                    )}
-                    <Button className="m-2 h-9 w-9 p-0" asChild>
-                        <Link to={`/courses/edit/${course?.id}`}><Pencil1Icon className="h-6 w-6"/></Link>
-                    </Button>
-                    <Button className="m-2 h-9 w-9 p-0" variant="destructive" onClick={deleteCourse}>
-                        <TrashIcon className="h-6 w-6"/>
-                    </Button>
-                </div>
+                    </div> : 
+                    <div>
+                        {user.username === course?.lecturerName ?
+                        <div className="grid grid-cols-1 m-auto w-max">
+                            <Button className="m-2 h-9 w-9 p-0" asChild>
+                                <Link to={`/courses/edit/${course?.id}`}><Pencil1Icon className="h-6 w-6"/></Link>
+                            </Button>
+                        </div> : 
+                            <div className="grid grid-cols-1 m-auto w-max">
+                                {isEnrolled ?(
+                                    <Button className="m-2 h-9 w-9 p-0" onClick={leaveCourse}>
+                                        <Cross2Icon className="h-6 w-6"/>
+                                    </Button>
+                                ): (
+                                    <Button className="m-2 h-9 w-9 p-0" onClick={joinCourse}>
+                                        <PlusIcon className="h-6 w-6"/>
+                                    </Button>
+                                )}
+                            </div>
+                        }
+                        </div>
+                    }
+                    </div>
                 ) : (
                     <div>
                     {user.role === "ADMIN" ?
@@ -130,16 +154,7 @@ export default function Course() {
                     </div> : 
                     <div>
                         {user.username === course?.lecturerName ?
-                        <div className="grid grid-cols-2 m-auto w-96">
-                            {isEnrolled ?(
-                                <Button className="m-2" onClick={leaveCourse}>
-                                    <Cross2Icon className="mr-2 h-4 w-4"/>Leave
-                                </Button>
-                            ): (
-                                <Button className="m-2" onClick={joinCourse}>
-                                    <PlusIcon className="mr-2 h-4 w-4"/>Join
-                                </Button>
-                            )}
+                        <div className="grid grid-cols-1 m-auto w-96">
                             <Button className="m-2" asChild>
                                 <Link to={`/courses/edit/${course?.id}`}><Pencil1Icon className="mr-2 h-4 w-4"/>Edit</Link>
                             </Button>
