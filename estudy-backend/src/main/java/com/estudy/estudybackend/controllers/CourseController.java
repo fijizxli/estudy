@@ -4,6 +4,7 @@ import com.estudy.estudybackend.models.Course;
 import com.estudy.estudybackend.models.Role;
 import com.estudy.estudybackend.models.User;
 import com.estudy.estudybackend.models.dtos.CourseDto;
+import com.estudy.estudybackend.models.dtos.StudentDto;
 import com.estudy.estudybackend.repositories.RoleRepository;
 import com.estudy.estudybackend.services.CourseService;
 import com.estudy.estudybackend.services.UserDetailServiceImpl;
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -42,10 +44,24 @@ public class CourseController {
 
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_LECTURER') or hasRole('ROLE_ADMIN')")
     @GetMapping("/{courseId}")
-    public ResponseEntity<Course> getCourseById(@PathVariable Long courseId){
+    public ResponseEntity<CourseDto> getCourseById(@PathVariable Long courseId){
+        Course course = cs.getCourseById(courseId);
+        List<StudentDto> studentDtos = new ArrayList<>();
+        for (User user: course.getStudents()){
+            studentDtos.add(new StudentDto(user.getId(), user.getUsername(), user.getEmailAddress()));
+        }
+        CourseDto courseDto = new CourseDto(course.getId(), course.getTitle(), course.getDescription(), course.getLecturerName(), course.getStudyMaterials(), studentDtos);
+
+        return new ResponseEntity<>(courseDto, HttpStatus.OK);
+
+    }
+
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_LECTURER') or hasRole('ROLE_ADMIN')")
+    @GetMapping("/{courseId}/lecturer")
+    public ResponseEntity<String> getLecturerOfCourse(@PathVariable Long courseId){
         Course course = cs.getCourseById(courseId);
         if (course != null){
-            return new ResponseEntity<>(course, HttpStatus.OK);
+            return new ResponseEntity<>(course.getLecturerName(), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
