@@ -41,6 +41,7 @@ export default function Login() {
                 id: user.data.id,
                 auth: base64,
                 username: username,
+                emailAddress: user.data.emailAddress,
                 isLoggedIn: true,
                 role: user.data.role.name,
             }
