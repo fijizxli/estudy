@@ -69,14 +69,26 @@ public class CourseController {
 
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_LECTURER') or hasRole('ROLE_ADMIN')")
     @GetMapping("/lecturer/{lecturerName}")
-    public ResponseEntity<List<Course>> getCoursesByLecturerName(@PathVariable String lecturerName){
+    public ResponseEntity<List<CourseDto>> getCoursesByLecturerName(@PathVariable String lecturerName){
         User lecturer = userService.findByUsername(lecturerName);
         if (lecturer != null){
             Role lecturerRole = roleRepository.findByName("LECTURER");
             if (lecturer.getRole().equals(lecturerRole)){
                 List<Course> courses = cs.getCoursesByLecturer(lecturer);
-                if (courses != null){
-                    return new ResponseEntity<>(courses, HttpStatus.OK);
+                List<CourseDto> courseDtos = new ArrayList<>();
+                for (Course course: courses){
+                    List<StudentDto> studentDtos = new ArrayList<>();
+                    for (User user : course.getStudents()){
+                        studentDtos.add(
+                            new StudentDto(user.getId(), user.getUsername(), user.getEmailAddress())
+                        );
+                    }
+                    courseDtos.add(
+                        new CourseDto(course.getId(), course.getTitle(), course.getDescription(), course.getLecturerName(), course.getStudyMaterials(), studentDtos)
+                    );
+                }
+                if (courseDtos != null){
+                    return new ResponseEntity<>(courseDtos, HttpStatus.OK);
                 } 
             }
         }
