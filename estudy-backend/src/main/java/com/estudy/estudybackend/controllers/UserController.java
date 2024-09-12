@@ -73,6 +73,24 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_LECTURER') or hasRole('ROLE_ADMIN')")
+    @GetMapping("/lecturer/{id}")
+    public ResponseEntity<LecturerDto> getUserIdByName(@PathVariable Long id){
+        try {
+            User user = userService.findById(id);
+            List<Course> coursesTaught = user.getCoursesTaught();
+            List<CourseDtoMin> coursesTaughtDtoMin = new ArrayList<>();
+            for (Course course : coursesTaught){
+                coursesTaughtDtoMin.add(new CourseDtoMin(course.getId(), course.getTitle(), course.getDescription(), course.getLecturerName()));
+            }
+            LecturerDto lecturerDto = new LecturerDto(user.getId(), user.getUsername(), user.getEmailAddress(), coursesTaughtDtoMin);
+
+            return new ResponseEntity<LecturerDto>(lecturerDto, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
+        }
+    }
+
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_LECTURER') or hasRole('ROLE_ADMIN')")
     @GetMapping("/role/{roleString}")
     public ResponseEntity<List<UserDto>> getLecturers(@PathVariable String roleString){
         try {
