@@ -38,15 +38,31 @@ services:
       - estudy-data:/var/lib/mysql
     networks: 
       - net
-        #    ports:
-        #      - 3306:3306
+    ports:
+      - 3306:3306
     expose:
-      - 3306
+      - 3306:3306
     environment:
       MYSQL_USER: db_user
       MYSQL_ROOT_PASSWORD: password
       MYSQL_PASSWORD: password
       MYSQL_DATABASE: estudy
+    
+  mongo:
+    image: mongo
+    container_name: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "root"
+      MONGO_INITDB_ROOT_PASSWORD: "example"
+      MONGO_INITDB_DATABASE: "ratings"
+
+    command: --auth
+    volumes:
+     - ./mongodata:/mongodata/db
+     - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 
 volumes:
   estudy-data:
