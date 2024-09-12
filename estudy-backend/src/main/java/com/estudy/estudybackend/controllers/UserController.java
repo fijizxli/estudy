@@ -88,6 +88,27 @@ public class UserController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_LECTURER') or hasRole('ROLE_ADMIN')")
+    @GetMapping("/role/lecturer/more")
+    public ResponseEntity<List<LecturerDto>> getLecturersMore(){
+        try {
+            Role role = roleRepository.findByName("lecturer");
+            List<LecturerDto> lecturerDtos = new ArrayList<>();
+            Set<User> users = userService.findByRole(role);
+            for (User user: users){
+                List<CourseDtoMin> coursesTaught = new ArrayList<>();
+                for (Course course : user.getCoursesTaught()){
+                    CourseDtoMin courseDtoMin = new CourseDtoMin(course.getId(), course.getTitle(), course.getDescription(), course.getLecturerName());
+                    coursesTaught.add(courseDtoMin);
+                }
+                lecturerDtos.add(new LecturerDto(user.getId(), user.getUsername(), user.getEmailAddress(), coursesTaught));
+            }
+            return new ResponseEntity<List<LecturerDto>>(lecturerDtos, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
+        }
+    }
+
     @GetMapping("/{username}/courses")
     public ResponseEntity<List<CourseDto>> getUserCoursesByName(@PathVariable String username){
         try {
