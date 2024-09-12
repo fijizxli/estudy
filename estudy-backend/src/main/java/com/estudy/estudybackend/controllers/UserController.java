@@ -72,8 +72,8 @@ public class UserController {
         }
     }
 
-    @PreAuthorize("hasRole('ROLE_LECTURER') or hasRole('ROLE_ADMIN')")
-    @GetMapping("/{roleString}")
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_LECTURER') or hasRole('ROLE_ADMIN')")
+    @GetMapping("/role/{roleString}")
     public ResponseEntity<List<UserDto>> getLecturers(@PathVariable String roleString){
         try {
             Role role = roleRepository.findByName(roleString);
