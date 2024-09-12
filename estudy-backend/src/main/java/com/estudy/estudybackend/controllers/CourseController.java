@@ -4,6 +4,7 @@ import com.estudy.estudybackend.models.Course;
 import com.estudy.estudybackend.models.Role;
 import com.estudy.estudybackend.models.User;
 import com.estudy.estudybackend.models.dtos.CourseDto;
+import com.estudy.estudybackend.models.dtos.CourseDtoMin;
 import com.estudy.estudybackend.models.dtos.StudentDto;
 import com.estudy.estudybackend.repositories.RoleRepository;
 import com.estudy.estudybackend.services.CourseService;
@@ -55,6 +56,18 @@ public class CourseController {
         return new ResponseEntity<>(courseDto, HttpStatus.OK);
 
     }
+
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_LECTURER') or hasRole('ROLE_ADMIN')")
+    @GetMapping("/{courseId}/less")
+    public ResponseEntity<CourseDtoMin> getCourseMinById(@PathVariable Long courseId){
+        Course course = cs.getCourseById(courseId);
+
+        CourseDtoMin courseDtoMin = new CourseDtoMin(course.getId(), course.getTitle(), course.getDescription(), course.getLecturerName());
+
+        return new ResponseEntity<>(courseDtoMin, HttpStatus.OK);
+
+    }
+
 
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_LECTURER') or hasRole('ROLE_ADMIN')")
     @GetMapping("/{courseId}/lecturer")
