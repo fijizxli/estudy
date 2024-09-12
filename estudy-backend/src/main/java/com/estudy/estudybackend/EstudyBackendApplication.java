@@ -88,50 +88,51 @@ public class EstudyBackendApplication {
     @Bean
     public CommandLineRunner dataLoader(UserRepository userRepository, PasswordEncoder encoder){
 
-        if (roleRepository.findByName("ADMIN") == null){
-            Role adminRole = new Role("ADMIN");
-            roleRepository.save(adminRole);
-        }
-
-        if (roleRepository.findByName("USER") == null){
-            Role userRole = new Role("USER");
-            roleRepository.save(userRole);
-        }
-
-        if (roleRepository.findByName("LECTURER") == null){
-            Role lecturerRole = new Role("LECTURER");
-            roleRepository.save(lecturerRole);
-        }
-
-        return args -> {
-            if (userRepository.findByUsername(adminUsername) == null){
-                User admin = new User(adminUsername,
-                encoder.encode(adminPassword),
-                roleRepository.findByName("admin"));
-                userRepository.save(admin);
+        if (dataGen){
+            if (roleRepository.findByName("ADMIN") == null){
+                Role adminRole = new Role("ADMIN");
+                roleRepository.save(adminRole);
             }
 
-            if (userRepository.findByUsername("John") == null){
-                User test_lecturer= new User(
-                "John", 
-                encoder.encode("john9999"), 
-                roleRepository.findByName("LECTURER"), 
-                "john@estudy.tv");
-                userRepository.save(test_lecturer);
+            if (roleRepository.findByName("USER") == null){
+                Role userRole = new Role("USER");
+                roleRepository.save(userRole);
             }
 
-            if (userRepository.findByUsername("Joe") == null){
-                User test_lecturer = new User(
-                "Joe", 
-                encoder.encode("john9999"), 
-                roleRepository.findByName("LECTURER"), 
-                "joe@estudy.tv");
-                userRepository.save(test_lecturer);
+            if (roleRepository.findByName("LECTURER") == null){
+                Role lecturerRole = new Role("LECTURER");
+                roleRepository.save(lecturerRole);
             }
 
-            if (dataGen) {
+            return args -> {
+                if (userRepository.findByUsername(adminUsername) == null){
+                    User admin = new User(adminUsername,
+                    encoder.encode(adminPassword),
+                    roleRepository.findByName("admin"));
+                    userRepository.save(admin);
+                }
+
+                if (userRepository.findByUsername("John") == null){
+                    User test_lecturer= new User(
+                    "John", 
+                    encoder.encode("john9999"), 
+                    roleRepository.findByName("LECTURER"), 
+                    "john@estudy.tv");
+                    userRepository.save(test_lecturer);
+                }
+
+                if (userRepository.findByUsername("Joe") == null){
+                    User test_lecturer = new User(
+                    "Joe", 
+                    encoder.encode("john9999"), 
+                    roleRepository.findByName("LECTURER"), 
+                    "joe@estudy.tv");
+                    userRepository.save(test_lecturer);
+                }
+
                 genSampleData();
-            }
-        };
+            };
+        }
+        return null;
     }
 }

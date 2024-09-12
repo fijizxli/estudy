@@ -15,6 +15,7 @@ services:
       DB_HOST: db
       DB_USER: db_user
       DB_PASSWORD: password
+      DATAGEN: 1
       ADMIN_USERNAME: admin
       ADMIN_PASSWORD: password
       API_KEY: key
