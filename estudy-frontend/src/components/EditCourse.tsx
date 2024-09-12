@@ -36,7 +36,7 @@ export default function EditCourse() {
           },
         });
 
-        const lecturersResponse = await axios.get("/lecturer", {
+        const lecturersResponse = await axios.get("/role/lecturer", {
           headers: {
             Authorization: `Basic ${user?.auth}`,
             "Content-Type": "application/json",

@@ -28,7 +28,7 @@ export default function AddCourse() {
         if (isLoading) {
         const fetchData = async () => {
             
-            const lecturersResponse = await axios.get("/lecturer", {
+            const lecturersResponse = await axios.get("/role/lecturer", {
             headers: {
                 Authorization: `Basic ${user?.auth}`,
                 "Content-Type": "application/json",
