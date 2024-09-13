@@ -8,4 +8,11 @@
     <AssemblyName>estudyRatings</AssemblyName>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="EntityFramework" Version="6.5.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
+    <PackageReference Include="MongoDB.driver" Version="2.28.0" />
+    <PackageReference Include="MongoDB.EntityFrameworkCore" Version="8.1.1" />
+  </ItemGroup>
+
 </Project>
