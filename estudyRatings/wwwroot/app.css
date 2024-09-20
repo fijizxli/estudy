@@ -49,3 +49,46 @@ h1:focus {
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
 }
+
+
+table {
+    border: 1px solid black;
+    width: fit-content;
+    min-width: 50%;
+}
+
+th {
+    background-color: antiquewhite;
+    border: 1px solid black;
+    padding: 8px;
+}
+
+td {
+    background-color: antiquewhite;
+    border: 1px solid black;
+    padding: 4px;
+}
+
+tr:hover{
+    background-color: lightblue;
+}
+
+.search {
+    display: flex;
+}
+
+.search > select {
+    margin: 2px;
+}
+
+.search > button {
+    margin: 2px;
+}
+
+.search > input {
+    margin: 2px;
+}
+
+h1 {
+    font-weight: bold;
+}
