@@ -1,3 +1,4 @@
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace estudyRatings.Components.Models;
@@ -8,25 +9,34 @@ public class Lecturer
     public int Id { get; set; }
     [BsonElement("username")]
     public string Username { get; set; }
-    [BsonElement("email")]
+    [BsonElement("emailAddress")]
     public string EmailAddress { get; set; }
     [BsonElement("ratings")]
-    public List<Rating> Ratings { get; set; }
+    public List<int> Ratings { get; set; }
     
-    [BsonElement("courses")]
-    public HashSet<Course> courses { get; set; }
-    
+    [BsonElement("coursesTaught")]
+    public List<int> courses { get; set; }
+
+    public override string ToString()
+    {
+        return base.ToString();
+    }
+
     public Lecturer(int id, string username, string emailAddress)
     {
         this.Id = id;
         this.Username = username;
         this.EmailAddress = emailAddress;
     }
-    public Lecturer(int id, string username, string emailAddress, HashSet<Course> courses)
+    public Lecturer(int id, string username, string emailAddress, List<int> courses)
     {
         this.Id = id;
         this.Username = username;
         this.EmailAddress = emailAddress;
         this.courses = courses;
+    }
+
+    public Lecturer()
+    {
     }
 }

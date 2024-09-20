@@ -1,3 +1,4 @@
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace estudyRatings.Components.Models;
@@ -12,8 +13,8 @@ public class Course
     public string Description { get; set; }
     [BsonElement("lecturerName")]
     public string LecturerName { get; set; }
-    [BsonElement("ratings")]
-    public List<Rating> Ratings { get; set; }
+    [BsonElement("lecturer")]
+    public int Lecturer { get; set; }
 
     public Course(int id, string title, string description, string lecturerName)
     {
@@ -23,12 +24,16 @@ public class Course
         LecturerName = lecturerName;
     }
 
-    public Course(int id, string title, string description, string lecturerName, List<Rating> ratings)
+    public Course(int id, string title, string description, string lecturerName, int lecturer)
     {
         Id = id;
         Title = title;
         Description = description;
         LecturerName = lecturerName;
-        Ratings = ratings;
+        Lecturer = lecturer;
+    }
+
+    public Course()
+    {
     }
 }
