@@ -1,21 +1,74 @@
 ﻿@page "/search"
+@using System.Runtime.CompilerServices
+@using estudyRatings.Components.Models
 @rendermode InteractiveServer
 
-<PageTitle>Search</PageTitle>
+@inject LecturerService LecturerService
+@inject CourseService CourseService
 
-<h1>Search</h1>
+<PageTitle>🔍 Search</PageTitle>
+
+<h1>🔍 Search</h1>
 <br/>
-<InputText @bind-Value="searchTerm"></InputText>
-<button class="btn btn-primary" @onclick="SearchLecturer">Search</button>
-
+<div class="search">
+<InputText @bind-Value="_searchTerm"></InputText>
+<select @bind="_field">
+    <option value="lecturer">Lecturer</option>
+    <option value="course">Course</option>
+</select>
+<button class="btn btn-primary" @onclick="SearchDb">Search</button>
+</div>
 <hr/>
-<p>You've searched for:<i>@searchTerm</i></p>
+
+@if (_field == "lecturer"){
+    _courses.Clear();
+    @if (_lecturers != null)
+    {
+        <ul>
+        @foreach (var lecturer in _lecturers){
+            {
+                <a href="lecturer/@lecturer.Id"><li>@lecturer.Username</li></a>
+            }
+        }
+        </ul>
+    } else {
+        <h2>not found.</h2>
+    }
+} else if (_field == "course"){
+    _lecturers.Clear();
+    @if (_courses != null){
+        <ul>
+        @foreach (var course in _courses){
+            string id = course.Id.ToString();
+            {
+                <a href="course/@id"><li>@course.Title</li></a>
+            }
+        }
+        </ul>
+    } else {
+        <h2>not found.</h2>
+    }
+}
 
 @code {
-    private string searchTerm= "";
-    private void SearchLecturer()
+    private string? _searchTerm= "";
+    private string? _field= "course";
+    private List<Lecturer> _lecturers = new List<Lecturer>();
+    private List<Course> _courses = new List<Course>();
+    private async Task SearchDb()
     {
-        Console.WriteLine($"Choosen search field: {searchTerm}");
+        if (!string.IsNullOrEmpty(_searchTerm))
+        {
+            if (_field == "lecturer") {
+                _lecturers = await LecturerService.GetLecturersByUsername(_searchTerm);
+            } else if (_field == "course"){
+                _courses = await CourseService.GetCourseByTitle(_searchTerm);
+            }
+        } else {
+            _lecturers.Clear();
+            _courses.Clear();
+
+        }
     }
 }
 

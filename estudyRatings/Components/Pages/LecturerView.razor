@@ -1,0 +1,78 @@
+@page "/lecturer/{LecturerId:int}"
+@using System.Runtime.CompilerServices
+@using estudyRatings.Components.Models
+@rendermode InteractiveServer
+@inject LecturerService LecturerService
+@inject CourseService CourseService 
+
+@if (_Lecturer != null){
+    <PageTitle>👨🏻‍🏫 @_Lecturer.Username</PageTitle>
+    <h1>👨🏻‍🏫 @_Lecturer.Username</h1>
+    <h2>✉️ Email address: @_Lecturer.EmailAddress</h2>
+    <h3>⭐ Ratings:</h3>
+
+    <h3>📓 Courses:</h3>
+    @if (_Lecturer.courses != null){
+        <ul>
+        @foreach (var id in _Lecturer.courses){
+            Course course = CourseService.GetCourseById(id.ToString());
+            {
+                <a href="course/@id"><li>@course.Title</li></a>
+            }
+        }
+        </ul>
+    }
+
+    <h4>Add new rating:</h4>
+    <EditForm Model="@rating" OnValidSubmit="Submit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div>
+            <label>Quality of lectures: </label>
+            <InputNumber Min=1 Max=10 @bind-Value="rating.QualityOfLectures"/>
+        </div>
+        <div>
+            <label>Quality of study materials: </label>
+            <InputNumber Min=1 Max=10 @bind-Value="rating.QualityOfStudyMaterials"/>
+        </div>
+        <div>
+            <label>Personality: </label>
+            <InputNumber Min=1 Max=10 @bind-Value="rating.Personality"/>
+        </div>
+        <div>
+            <label>Comment: </label>
+            <InputTextArea @bind-Value="rating.Comment"/>
+        </div>
+        <button class="btn btn-primary" type="submit">Submit</button>
+    </EditForm>
+
+} else {
+    <PageTitle>loading...</PageTitle>
+    <h2>loading...</h2>
+}
+
+@code {
+    private Lecturer _Lecturer = new Lecturer();
+
+    private Rating rating = new Rating();
+
+    [Parameter]
+    public int LecturerId {get; set;}
+
+    public List<string> courses = new List<string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetLecturer();
+    }
+    private async Task GetLecturer()
+    {
+        _Lecturer = await LecturerService.GetLecturerByIdAsync(LecturerId.ToString());
+    }
+
+    private async Task Submit(){
+        
+    }
+}
+

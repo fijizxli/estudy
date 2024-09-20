@@ -1,0 +1,34 @@
+@page "/course/{CourseId:int}"
+@using System.Runtime.CompilerServices
+@using estudyRatings.Components.Models
+@rendermode InteractiveServer
+
+@inject CourseService CourseService
+
+
+@if (_Course != null){
+    <PageTitle>📓 @_Course.Title</PageTitle>
+    <h1>📓 @_Course.Title</h1>
+    <a href="lecturer/@_Course.Lecturer"><h2>Lecturer: @_Course.LecturerName</h2></a>
+    <p>@_Course.Description</p>
+} else {
+    <PageTitle>loading...</PageTitle>
+    <h2>loading...</h2>
+}
+
+
+@code {
+    private Course _Course = new Course();
+
+    [Parameter]
+    public int CourseId {get; set;}
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetCourse();
+    }
+    private async Task GetCourse()
+    {
+        _Course = await CourseService.GetCourseByIdAsync(CourseId.ToString());
+    }
+}
