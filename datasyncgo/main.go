@@ -18,7 +18,7 @@ const uri = "mongodb://root:example@localhost:27017/ratings?authSource=admin"
 
 type Rating struct {
 	ID                      int    `json:"id" bson:"_id"`
-	Lecturer                string `json:"lecturer" bson:"lecturer"`
+	Lecturer                int    `json:"lecturer" bson:"lecturer"`
 	QualityOfLectures       int    `json:"qualityOfLectures" bson:"qualityOfLectures"`
 	QualityOfStudyMaterials int    `json:"qualityOfStudyMaterials" bson:"qualityOfStudyMaterials"`
 	Personality             int    `json:"personality" bson:"personality"`
@@ -39,7 +39,7 @@ type Lecturer struct {
 	EmailAddress string   `json:"emailAddress" bson:"emailAddress"`
 	CourseIDs    []int    `json:"-" bson:"coursesTaught"`
 	Courses      []Course `json:"coursesTaught" bson:"-"`
-	Ratings      []int    `json:"ratings" bson:"ratings"`
+	Ratings      []int    `json:"-" bson:"ratings"`
 }
 
 func processCourses(courses []Course, lecturerID int, courseCollection mongo.Collection) []int {
@@ -104,6 +104,7 @@ func main() {
 	r.GET("/m/lecturers", func(c *gin.Context) {
 		req, err := http.NewRequest("", "http://localhost:8080/role/lecturer/more", nil)
 		req.Header.Add("X-API-KEY", "key")
+		req.SetBasicAuth("admin", "password")
 
 		if err != nil {
 			panic(err)
@@ -136,6 +137,7 @@ func main() {
 	r.GET("/m/lecturer/:id", func(c *gin.Context) {
 		req, err := http.NewRequest("", "http://localhost:8080/lecturer/"+c.Param("id"), nil)
 		req.Header.Add("X-API-KEY", "key")
+		req.SetBasicAuth("admin", "password")
 
 		if err != nil {
 			panic(err)
@@ -170,6 +172,7 @@ func main() {
 	r.GET("/u/lecturer/:id", func(c *gin.Context) {
 		req, err := http.NewRequest("", "http://localhost:8080/lecturer/"+c.Param("id"), nil)
 		req.Header.Add("X-API-KEY", "key")
+		req.SetBasicAuth("admin", "password")
 
 		if err != nil {
 			panic(err)
@@ -283,6 +286,7 @@ func main() {
 	r.GET("/u/courses/:id", func(c *gin.Context) {
 		req, err := http.NewRequest("", "http://localhost:8080/courses/"+c.Param("id")+"/less", nil)
 		req.Header.Add("X-API-KEY", "key")
+		req.SetBasicAuth("admin", "password")
 
 		if err != nil {
 			panic(err)
