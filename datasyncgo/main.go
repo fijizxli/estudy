@@ -10,6 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -17,12 +18,12 @@ import (
 const uri = "mongodb://root:example@localhost:27017/ratings?authSource=admin"
 
 type Rating struct {
-	ID                      int    `json:"id" bson:"_id"`
-	Lecturer                int    `json:"lecturer" bson:"lecturer"`
-	QualityOfLectures       int    `json:"qualityOfLectures" bson:"qualityOfLectures"`
-	QualityOfStudyMaterials int    `json:"qualityOfStudyMaterials" bson:"qualityOfStudyMaterials"`
-	Personality             int    `json:"personality" bson:"personality"`
-	Comment                 string `json:"comment" bson:"comment"`
+	ID                      primitive.ObjectID `json:"id" bson:"_id"`
+	Lecturer                int                `json:"lecturer" bson:"lecturer"`
+	QualityOfLectures       int                `json:"qualityOfLectures" bson:"qualityOfLectures"`
+	QualityOfStudyMaterials int                `json:"qualityOfStudyMaterials" bson:"qualityOfStudyMaterials"`
+	Personality             int                `json:"personality" bson:"personality"`
+	Comment                 string             `json:"comment" bson:"comment"`
 }
 
 type Course struct {
@@ -34,12 +35,12 @@ type Course struct {
 }
 
 type Lecturer struct {
-	ID           int      `json:"id" bson:"_id"`
-	Username     string   `json:"username" bson:"username"`
-	EmailAddress string   `json:"emailAddress" bson:"emailAddress"`
-	CourseIDs    []int    `json:"-" bson:"coursesTaught"`
-	Courses      []Course `json:"coursesTaught" bson:"-"`
-	Ratings      []int    `json:"-" bson:"ratings"`
+	ID           int                  `json:"id" bson:"_id"`
+	Username     string               `json:"username" bson:"username"`
+	EmailAddress string               `json:"emailAddress" bson:"emailAddress"`
+	CourseIDs    []int                `json:"-" bson:"coursesTaught"`
+	Courses      []Course             `json:"coursesTaught" bson:"-"`
+	Ratings      []primitive.ObjectID `json:"-" bson:"ratings"`
 }
 
 func processCourses(courses []Course, lecturerID int, courseCollection mongo.Collection) []int {
@@ -58,6 +59,9 @@ func processCourses(courses []Course, lecturerID int, courseCollection mongo.Col
 
 func processLecturer(lecturer Lecturer, courseCollection mongo.Collection) Lecturer {
 	courseIDs := processCourses(lecturer.Courses, lecturer.ID, courseCollection)
+	if lecturer.Ratings == nil {
+		lecturer.Ratings = []primitive.ObjectID{}
+	}
 	lecturer.CourseIDs = courseIDs
 	return lecturer
 }
