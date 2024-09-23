@@ -5,7 +5,7 @@ namespace estudyRatings.Components.Models;
 public class Rating
 {
     [BsonId]
-    public int Id { get; set; }
+    public ObjectId Id { get; set; }
     [BsonElement("LecturerId")]
     public int LecturerId { get; set; }
     [BsonElement("qualityOfLectures")]
@@ -20,7 +20,7 @@ public class Rating
     public Rating()
     {
     }
-    public Rating(int id, int lecturerId, int qualityOfLectures, 
+    public Rating(ObjectId id, int lecturerId, int qualityOfLectures, 
     int qualityOfStudyMaterials, int personality, string comment)
     {
         Id = id;
