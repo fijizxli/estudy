@@ -42,9 +42,9 @@ h1:focus {
     color: white;
 }
 
-    .blazor-error-boundary::after {
-        content: "An error has occurred."
-    }
+.blazor-error-boundary::after {
+    content: "An error has occurred."
+}
 
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
@@ -91,4 +91,21 @@ tr:hover{
 
 h1 {
     font-weight: bold;
+}
+
+.comment {
+    background-color: lightblue;
+    border: 1px solid black ;
+    width: 30%;
+    padding: 2px;
+}
+
+.ratingform {
+    display: gri;
+    width: 160px;
+    padding: auto;
+}
+
+.ratingform > InputTextArea {
+    width: 100%;
 }

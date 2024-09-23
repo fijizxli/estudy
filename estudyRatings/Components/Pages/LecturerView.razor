@@ -4,13 +4,26 @@
 @rendermode InteractiveServer
 @inject LecturerService LecturerService
 @inject CourseService CourseService 
+@inject RatingService RatingService 
 
 @if (_Lecturer != null){
     <PageTitle>👨🏻‍🏫 @_Lecturer.Username</PageTitle>
     <h1>👨🏻‍🏫 @_Lecturer.Username</h1>
     <h2>✉️ Email address: @_Lecturer.EmailAddress</h2>
     <h3>⭐ Ratings:</h3>
-
+    @if (ratings != null){
+        <ul>
+            <li>
+                Quality of lectures: @avgQualityOfLecturesScore
+            </li>
+            <li>
+                Quality of study materials: @avgQualityOfStudyMaterialsScore
+            </li>
+            <li>
+                Personality: @avgPersonalityScore
+            </li>
+        </ul>
+    }
     <h3>📓 Courses:</h3>
     @if (_Lecturer.courses != null){
         <ul>
@@ -23,11 +36,12 @@
         </ul>
     }
 
-    <h4>Add new rating:</h4>
+    <h4>🆕 Add new rating:</h4>
     <EditForm Model="@rating" OnValidSubmit="Submit">
         <DataAnnotationsValidator />
         <ValidationSummary />
 
+    <div class="ratingform">
         <div>
             <label>Quality of lectures: </label>
             <InputNumber Min=1 Max=10 @bind-Value="rating.QualityOfLectures"/>
@@ -45,7 +59,25 @@
             <InputTextArea @bind-Value="rating.Comment"/>
         </div>
         <button class="btn btn-primary" type="submit">Submit</button>
+    </div>
     </EditForm>
+
+    <br>
+    <h3>🗩 Comments:</h3>
+    <hr>
+    @if (ratings != null){
+        @foreach (var r in ratings){
+            {
+                @if (@r.Comment != null){
+                    <div class="comment">
+                        <p>@r.Comment</p>
+                    </div>
+                    <br>
+                }
+            }
+        }
+    }
+
 
 } else {
     <PageTitle>loading...</PageTitle>
@@ -56,6 +88,11 @@
     private Lecturer _Lecturer = new Lecturer();
 
     private Rating rating = new Rating();
+    private List<Rating> ratings = new List<Rating>();
+
+    private float avgQualityOfLecturesScore;
+    private float avgQualityOfStudyMaterialsScore;
+    private float avgPersonalityScore;
 
     [Parameter]
     public int LecturerId {get; set;}
@@ -65,14 +102,47 @@
     protected override async Task OnInitializedAsync()
     {
         await GetLecturer();
+        await GetRatingsByLecturerId();
     }
     private async Task GetLecturer()
     {
         _Lecturer = await LecturerService.GetLecturerByIdAsync(LecturerId.ToString());
     }
 
+    private float Avg(List<int> ints){
+        if (ints.Count != 0){
+            int sum = 0;
+            foreach (int i in ints){
+                sum += i;
+            }
+            return sum / ints.Count;
+        }
+        return 0;
+    }
+    
+    private async Task GetRatingsByLecturerId()
+    {
+        List<int> QualityOfLecturesScores = new List<int>();
+        List<int> QualityOfStudyMaterialsScores = new List<int>();
+        List<int> PersonalityScores = new List<int>();
+        ratings = await RatingService.GetRatingsByLecturerIdAsync(LecturerId);
+        foreach (var r in ratings){
+            QualityOfLecturesScores.Add(r.QualityOfLectures);
+            QualityOfStudyMaterialsScores.Add(r.QualityOfStudyMaterials);
+            PersonalityScores.Add(r.Personality);
+        }      
+        avgQualityOfLecturesScore = Avg(QualityOfLecturesScores);
+        avgQualityOfStudyMaterialsScore = Avg(QualityOfStudyMaterialsScores);
+        avgPersonalityScore = Avg(PersonalityScores);
+    }
+
     private async Task Submit(){
-        
+        if (rating != null){
+            rating.LecturerId = _Lecturer.Id;
+            var newRating = await RatingService.InsertRating(rating);
+            await LecturerService.AddRatingToLecturer(_Lecturer.Id, newRating.Id);
+        }
+        rating = new Rating();
     }
 }
 

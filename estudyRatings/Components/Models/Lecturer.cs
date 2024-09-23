@@ -12,7 +12,8 @@ public class Lecturer
     [BsonElement("emailAddress")]
     public string EmailAddress { get; set; }
     [BsonElement("ratings")]
-    public List<int> Ratings { get; set; }
+    public List<ObjectId> Ratings { get; set; } = new List<ObjectId>();
+
     
     [BsonElement("coursesTaught")]
     public List<int> courses { get; set; }

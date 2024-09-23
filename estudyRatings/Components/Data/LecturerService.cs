@@ -28,4 +28,10 @@ public class LecturerService {
 
         return await lecturers;
     }
+
+    public async Task AddRatingToLecturer(int lecturerId, ObjectId ratingId){
+        var filter = Builders<Lecturer>.Filter.Eq(l => l.Id, lecturerId);
+        var update = Builders<Lecturer>.Update.Push(l => l.Ratings, ratingId);
+        await _lecturersCollection.UpdateOneAsync(filter, update);
+    }
 }

@@ -20,6 +20,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddSingleton<IMongoClient>(client);
 builder.Services.AddSingleton<LecturerService>();
 builder.Services.AddSingleton<CourseService>();
+builder.Services.AddSingleton<RatingService>();
 
 var app = builder.Build();
 
