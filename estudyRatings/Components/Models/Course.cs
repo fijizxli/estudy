@@ -15,22 +15,26 @@ public class Course
     public string LecturerName { get; set; }
     [BsonElement("lecturer")]
     public int Lecturer { get; set; }
+    [BsonElement("ratings")]
+    public List<ObjectId> Ratings { get; set; } = new List<ObjectId>();
 
-    public Course(int id, string title, string description, string lecturerName)
+    public Course(int id, string title, string description, string lecturerName, List<ObjectId> ratings)
     {
         Id = id;
         Title = title;
         Description = description;
         LecturerName = lecturerName;
+        Ratings = ratings;
     }
 
-    public Course(int id, string title, string description, string lecturerName, int lecturer)
+    public Course(int id, string title, string description, string lecturerName, int lecturer, List<ObjectId> ratings)
     {
         Id = id;
         Title = title;
         Description = description;
         LecturerName = lecturerName;
         Lecturer = lecturer;
+        Ratings = ratings;
     }
 
     public Course()

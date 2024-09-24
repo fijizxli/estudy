@@ -33,4 +33,10 @@ public class CourseService {
         var courses = _courseCollection.Find(filter).ToListAsync();
         return await courses;
     }
+
+    public async Task AddRatingToCourse(int lecturerId, ObjectId ratingId){
+        var filter = Builders<Course>.Filter.Eq(l => l.Id, lecturerId);
+        var update = Builders<Course>.Update.Push(l => l.Ratings, ratingId);
+        await _courseCollection.UpdateOneAsync(filter, update);
+    }
 }

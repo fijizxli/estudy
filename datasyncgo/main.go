@@ -26,12 +26,22 @@ type Rating struct {
 	Comment                 string             `json:"comment" bson:"comment"`
 }
 
+type CourseRating struct {
+	ID                      primitive.ObjectID `json:"id" bson:"_id"`
+	Lecturer                int                `json:"course" bson:"course"`
+	QualityOfLectures       int                `json:"practicalApplication" bson:"practicalApplication"`
+	QualityOfStudyMaterials int                `json:"assignments" bson:"assignments"`
+	Personality             int                `json:"grading" bson:"grading"`
+	Comment                 string             `json:"comment" bson:"comment"`
+}
+
 type Course struct {
-	ID           int    `json:"id" bson:"_id"`
-	Title        string `json:"title" bson:"title"`
-	Description  string `json:"description" bson:"description"`
-	LecturerName string `json:"lecturerName" bson:"lecturerName"`
-	Lecturer     int    `json:"-" bson:"lecturer"`
+	ID           int                  `json:"id" bson:"_id"`
+	Title        string               `json:"title" bson:"title"`
+	Description  string               `json:"description" bson:"description"`
+	LecturerName string               `json:"lecturerName" bson:"lecturerName"`
+	Lecturer     int                  `json:"-" bson:"lecturer"`
+	Ratings      []primitive.ObjectID `json:"-" bson:"ratings"`
 }
 
 type Lecturer struct {
