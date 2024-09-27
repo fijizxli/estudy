@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using estudyRatings.Components.Models;
 using MongoDB.Driver;
 
@@ -9,10 +10,31 @@ public class RatingService {
         _ratingCollection = database.GetCollection<Rating>("ratings");
     }
 
-    public async Task<Rating> InsertRating(Rating rating)
+    public async Task<Rating?> InsertRating(Rating rating)
     {
-        await _ratingCollection.InsertOneAsync(rating);
-        return rating;
+        if (rating.Comment != null){
+            HttpClient client = new HttpClient();
+            try
+            {
+                using HttpResponseMessage response = await client.GetAsync("http://localhost:8000/check?s="+rating.Comment.ToString());
+                response.EnsureSuccessStatusCode();
+                string responseBody = await response.Content.ReadAsStringAsync();
+
+                JsonNode offensiveNode = JsonNode.Parse(responseBody)!;
+
+
+                bool offensive = (bool)offensiveNode["offensive"];
+
+                await _ratingCollection.InsertOneAsync(rating);
+                return rating;
+            }
+            catch (HttpRequestException e)
+            {
+                Console.WriteLine("\nException Caught!");
+                Console.WriteLine("Message :{0} ", e.Message);
+            }
+        }
+        return null;
     }
 
     public async Task<List<Rating>> GetRatingsByLecturerIdAsync(int id)
