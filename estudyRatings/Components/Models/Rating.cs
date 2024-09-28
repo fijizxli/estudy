@@ -16,12 +16,15 @@ public class Rating
     public int Personality { get; set; }
     [BsonElement("comment")]
     public string? Comment { get; set; }
+    [BsonElement("date-added")]
+    public DateTime DateAdded { get; set; }
+
 
     public Rating()
     {
     }
     public Rating(ObjectId id, int lecturerId, int qualityOfLectures, 
-    int qualityOfStudyMaterials, int personality, string comment)
+    int qualityOfStudyMaterials, int personality, string comment, DateTime date)
     {
         Id = id;
         LecturerId = lecturerId;
@@ -29,5 +32,6 @@ public class Rating
         QualityOfStudyMaterials = qualityOfStudyMaterials;
         Personality = personality;
         Comment = comment;
+        DateAdded = date;
     }
 }

@@ -16,12 +16,14 @@ public class CourseRating
     public int Grading { get; set; }
     [BsonElement("comment")]
     public string? Comment { get; set; }
+    [BsonElement("date-added")]
+    public DateTime DateAdded { get; set; }
 
     public CourseRating()
     {
     }
     public CourseRating(ObjectId id, int courseId, int practicalApplication, 
-    int assignments, int grading, string comment)
+    int assignments, int grading, string comment, DateTime date)
     {
         Id = id;
         CourseId = courseId;
@@ -29,5 +31,6 @@ public class CourseRating
         Assignments = assignments;
         Grading = grading;
         Comment = comment;
+        DateAdded = date;
     }
 }
