@@ -93,11 +93,16 @@ h1 {
     font-weight: bold;
 }
 
+.commentcontainer {
+    padding: 8px;
+}
+
 .comment {
     background-color: lightblue;
     border: 1px solid black ;
-    width: 30%;
+    width: 60%;
     padding: 2px;
+
 }
 
 .ratingform {
@@ -108,4 +113,12 @@ h1 {
 
 .ratingform > InputTextArea {
     width: 100%;
+}
+
+.row {
+    display: flex;
+}
+
+.column {
+    flex: 50%;
 }

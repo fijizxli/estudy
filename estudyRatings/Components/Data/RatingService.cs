@@ -41,4 +41,11 @@ public class RatingService {
     {
         return await _ratingCollection.Find(r => r.LecturerId == id).ToListAsync();
     }
+
+    public async Task<List<Rating>> GetLatestRatings(int max){
+        var sort = Builders<Rating>.Sort.Descending("date-added");
+        var filter = Builders<Rating>.Filter.Empty;
+
+        return await _ratingCollection.Find(filter).Sort(sort).Limit(max).ToListAsync();
+    }
 }

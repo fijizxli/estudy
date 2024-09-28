@@ -33,6 +33,7 @@ type CourseRating struct {
 	QualityOfStudyMaterials int                `json:"assignments" bson:"assignments"`
 	Personality             int                `json:"grading" bson:"grading"`
 	Comment                 string             `json:"comment" bson:"comment"`
+	DateAdded               primitive.DateTime `json:"-" bson:"date-added"`
 }
 
 type Course struct {

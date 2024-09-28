@@ -68,12 +68,14 @@
     @if (ratings != null){
         @foreach (var r in ratings){
             {
+                <div class="commentcontainer">
                 @if (@r.Comment != null){
                     <div class="comment">
                         <p>@r.Comment</p>
                     </div>
                     <br>
                 }
+                </div>
             }
         }
     }
@@ -139,6 +141,7 @@
     private async Task Submit(){
         if (rating != null){
             rating.LecturerId = _Lecturer.Id;
+            rating.DateAdded = DateTime.Now;
             var newRating = await RatingService.InsertRating(rating);
             await LecturerService.AddRatingToLecturer(_Lecturer.Id, newRating.Id);
         }

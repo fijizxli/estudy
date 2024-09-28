@@ -40,4 +40,17 @@ public class Lecturer
     public Lecturer()
     {
     }
+    public override bool Equals(object obj)
+    {
+        if (obj is Lecturer other)
+        {
+            return this.Id == other.Id;
+        }
+        return false;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Id);   
+    }
 }

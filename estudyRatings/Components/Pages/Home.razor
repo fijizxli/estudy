@@ -3,47 +3,85 @@
 @using estudyRatings.Components.Models
 @rendermode InteractiveServer
 
+@inject CourseRatingService CourseRatingService
+@inject RatingService RatingService
 @inject LecturerService LecturerService
+@inject CourseService CourseService
 
 <PageTitle>🏠 Home</PageTitle>
 
 <h1>🏠 Home</h1>
+<hr>
+    <div class="row">
+    @if (Ratings != null){
+        <div class="column">
+            @for (int i = 0; i < Lecturers.Count; i++){
+                <h4>@LecturerList[i].Username</h4>
+                @for (int j = 0; j < Ratings.Count; j++){
+                    <div class="commentcontainer">
+                    @if (LecturerList[i].Id == Ratings[j].LecturerId){
+                        <div class="comment">
+                            <h5>@Ratings[j].DateAdded</h5>
+                            <p>@Ratings[j].Comment</p>
+                        </div>
+                    }
+                    </div>
+                }
+            }
+        </div>
+    }
+    @if (CourseRatings != null){
+        <div class="column">
+            @for (int i = 0; i < Courses.Count; i++){
+                <h4>@CourseList[i].Title</h4>
+                @for (int j = 0; j < CourseRatings.Count; j++){
+                    <div class="commentcontainer">
+                    @if (CourseList[i].Id == CourseRatings[j].CourseId){
+                        <div class="comment">
+                            <h5>@CourseRatings[j].DateAdded</h5>
+                            <p>@CourseRatings[j].Comment</p>
+                        </div>
+                    }
+                    </div>
+                }
+            }
+        </div>
+    }
+    </div>
 
-<!--
-@if (Lecturers != null)
-{
-    <table>
-        <thead>
-            <tr>
-                <th scope="col">Name</th>
-                <th scope="col">Email address</th>
-            </tr>
-        </thead>
-        <tbody>
-        @foreach(var lecturer in Lecturers)
-        {
-            <tr>
-                <td>@lecturer.Username</td>
-                <td>@lecturer.EmailAddress</td>
-            </tr>
-        }
-        </tbody>
-    </table>
-}
-else
-{
-    <h2>none</h2>
-}
--->
 
 @code {
-    private List<Lecturer> Lecturers;
+    private List<CourseRating> CourseRatings = new List<CourseRating>();
+    private List<Rating> Ratings = new List<Rating>();
+    private List<Lecturer> LecturerList = new List<Lecturer>();
+    private HashSet<Lecturer> Lecturers = new HashSet<Lecturer>();
+    private List<Course> CourseList = new List<Course>();
+    private HashSet<Course> Courses = new HashSet<Course>();
     protected override async Task OnInitializedAsync()
     {
-        await SearchLecturers();
+        await SearchRatings();
+        await GetLecturers();
+        await GetCourses();
+        LecturerList = Lecturers.ToList<Lecturer>();
+        CourseList = Courses.ToList<Course>();
     }
-    private async Task SearchLecturers()
+    private async Task SearchRatings()
     {
-        Lecturers = await LecturerService.GetLecturers();
+        Ratings = await RatingService.GetLatestRatings(3);
+        CourseRatings = await CourseRatingService.GetLatestCourseRatings(3);
+    }
+    private async Task GetLecturers()
+    {
+        foreach (var rating in Ratings){
+            Lecturer lecturer = await LecturerService.GetLecturerByIdAsync(rating.LecturerId.ToString());
+            Lecturers.Add(lecturer);
+        }
+    }
+    private async Task GetCourses()
+    {
+        foreach (var rating in CourseRatings){
+            Course course = await CourseService.GetCourseByIdAsync(rating.CourseId.ToString());
+            Courses.Add(course);
+        }
     }
 }

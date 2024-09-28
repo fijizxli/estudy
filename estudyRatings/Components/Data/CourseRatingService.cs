@@ -41,4 +41,11 @@ public class CourseRatingService {
     {
         return await _courseRatingCollection.Find(r => r.CourseId == id).ToListAsync();
     }
+
+    public async Task<List<CourseRating>> GetLatestCourseRatings(int max){
+        var sort = Builders<CourseRating>.Sort.Descending("date-added");
+        var filter = Builders<CourseRating>.Filter.Empty;
+
+        return await _courseRatingCollection.Find(filter).Sort(sort).Limit(max).ToListAsync();
+    }
 }
