@@ -37,20 +37,21 @@ public class EstudyBackendApplication {
     UserRepository userRepository;
 
     public void genSampleData(){
-        User test_lecturer = userRepository.findByUsername("John");
+        User test_lecturer_john = userRepository.findByUsername("John");
+        User test_lecturer_emily = userRepository.findByUsername("Emily");
 
         Course c1 = new Course(
             "Introduction to Computer Science", 
             "This course provides an overview of fundamental concepts in computer science, including algorithms, data structures, and programming languages",
-            test_lecturer);
+            test_lecturer_john);
         Course c2 = new Course(
             "Data Science Fundamentals", 
             "Explore data analysis, visualization, and machine learning techniques in this hands-on course",
-            test_lecturer);
+            test_lecturer_john);
         Course c3 = new Course(
             "Web Development Basics", 
             "Learn HTML, CSS, and JavaScript to build interactive web applications.",
-            test_lecturer);
+            test_lecturer_emily);
 
         courseRepository.save(c1);
         courseRepository.save(c2);
@@ -127,6 +128,15 @@ public class EstudyBackendApplication {
                     encoder.encode("john9999"), 
                     roleRepository.findByName("LECTURER"), 
                     "joe@estudy.tv");
+                    userRepository.save(test_lecturer);
+                }
+
+                if (userRepository.findByUsername("Emily") == null){
+                    User test_lecturer = new User(
+                    "Emily", 
+                    encoder.encode("emily9999"), 
+                    roleRepository.findByName("LECTURER"), 
+                    "emily@estudy.tv");
                     userRepository.save(test_lecturer);
                 }
 
