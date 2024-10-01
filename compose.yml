@@ -84,8 +84,7 @@ services:
      - ./miniodata:/data
     ports:
       - 9001:9001
-    expose:
-      - 9001:9001
+      - 9000:9000
 
 volumes:
   estudy-data:
