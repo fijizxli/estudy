@@ -7,6 +7,7 @@ import (
 	"mime/multipart"
 	"os"
 	"path/filepath"
+"strconv"
 	"strings"
 	"time"
 
@@ -29,7 +30,22 @@ func isValidFormat(file *multipart.FileHeader, allowedExtensions []string) bool 
 	return false
 }
 
-func upload(minioClient *minio.Client, c *gin.Context, bucketName string) bool {
+func insertInfoDB(db *sql.DB, tableName string, filename string, id int, fileId string) {
+	strs := strings.Split(tableName, "_")
+	insertInfo := `INSERT INTO ` + tableName + ` (
+		"` + strs[0] + `id", "filename", "` + strs[1] + `id")
+		VALUES(` + strconv.Itoa(id) + `, ` + filename + `, ` + fileId + `);`
+
+	statement, err := db.Prepare(insertInfo)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	statement.Exec()
+	log.Println("New row (" + strconv.Itoa(id) + ", " + filename + ", " + fileId + ")" + " added to " + tableName + ".")
+}
+
+func upload(minioClient *minio.Client, c *gin.Context, bucketName string, db *sql.DB, tableName string, id int) bool {
 	file, _ := c.FormFile("file")
 
 	formats := []string{".png", ".jpg", ".pdf", ".docx"}
@@ -56,6 +72,7 @@ file.Filename = uuid.NewString() //File name to store in minio
 			log.Fatalln(err)
 		}
 		log.Println("Uploaded", file.Filename, " of size: ", info.Size, "Successfully.")
+insertInfoDB(db, tableName, originalFilename, id, file.Filename)
 
 		os.Remove("./" + file.Filename)
 		return true
@@ -144,34 +161,52 @@ func main() {
 		}
 	}
 
-	r.POST("/cover/upload", func(c *gin.Context) {
-		if upload(minioClient, c, bucketNames[2]) {
+	r.POST("/upload/cover/:id", func(c *gin.Context) {
+id, _ := strconv.Atoi(c.Param("id"))
+		if upload(minioClient, c, bucketNames[0], db, tables[0], id) {
 			c.JSON(200, gin.H{
 				"message": "file uploaded successfully.",
 			})
-		}
+		} else {
 		c.JSON(415, gin.H{
 			"error": "unsupported file format",
 		})
+}
 	})
 
-	r.POST("/avatar/upload", func(c *gin.Context) {
-		if upload(minioClient, c, bucketNames[2]) {
+	r.POST("/upload/avatar/:id", func(c *gin.Context) {
+id, _ := strconv.Atoi(c.Param("id"))
+		if upload(minioClient, c, bucketNames[1], db, tables[1], id) {
 			c.JSON(200, gin.H{
 				"message": "file uploaded successfully.",
 			})
-		}
+		} else {
 		c.JSON(415, gin.H{
 			"error": "unsupported file format",
 		})
+}
 	})
 
-	r.POST("/coursefile/upload", func(c *gin.Context) {
-		if upload(minioClient, c, bucketNames[2]) {
+	r.POST("/upload/coursefile/:id", func(c *gin.Context) {
+id, _ := strconv.Atoi(c.Param("id"))
+		if upload(minioClient, c, bucketNames[2], db, tables[2], id) {
 			c.JSON(200, gin.H{
 				"message": "file uploaded successfully.",
 			})
+		} else {
+			c.JSON(415, gin.H{
+				"error": "unsupported file format",
+			})
 		}
+	})
+
+	r.GET("/avatar/:id", func(c *gin.Context) {
+		reqParams := make(url.Values)
+		reqParams.Set("response-content-disposition", "attachment; filename=\"your-filename.txt\"")
+
+		presignedURL, err := minioClient.PresignedGetObject(context.Background(), bucketNames[1], c.Param("objectname"), time.Duration(1000)*time.Second, reqParams)
+		if err != nil {
+			log.Fatalln(err)
 		c.JSON(415, gin.H{
 			"error": "unsupported file format",
 		})
