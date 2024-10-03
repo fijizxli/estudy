@@ -35,7 +35,7 @@ func insertInfoDB(db *sql.DB, tableName string, filename string, id int, fileId 
 	strs := strings.Split(tableName, "_")
 	insertInfo := `INSERT INTO ` + tableName + ` (
 		"` + strs[0] + `id", "filename", "` + strs[1] + `id")
-		VALUES(` + strconv.Itoa(id) + `, ` + filename + `, ` + fileId + `);`
+		VALUES(` + strconv.Itoa(id) + `, ` + "\"" + filename + "\"" + `, ` + "\"" + fileId + "\"" + `);`
 
 	statement, err := db.Prepare(insertInfo)
 	if err != nil {
@@ -94,7 +94,7 @@ func createTables(db *sql.DB, tables []string) {
 			createTable := `CREATE TABLE ` + tableName + `(
 				"` + strs[0] + `id" integer NOT NULL PRIMARY KEY,		
 				"filename" TEXT,
-				"` + strs[1] + `id" integer
+				"` + strs[1] + `id" TEXT
 				);`
 
 			statement, err := db.Prepare(createTable)
