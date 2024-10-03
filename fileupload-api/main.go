@@ -152,7 +152,6 @@ func main() {
 	bucketNames := [3]string{"coursecovers", "profileavatars", "coursefiles"}
 
 	for _, bN := range bucketNames {
-		fmt.Println(bN)
 		err = minioClient.MakeBucket(context.Background(), bN, opts)
 		if err != nil {
 			log.Println(err)
