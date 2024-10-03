@@ -35,8 +35,10 @@ func upload(minioClient *minio.Client, c *gin.Context, bucketName string) bool {
 	formats := []string{".png", ".jpg", ".pdf", ".docx"}
 
 	if isValidFormat(file, formats) {
-		file.Filename = time.Now().Local().String() + "_" + file.Filename
-		file.Filename = strings.Replace(file.Filename, " ", "_", -1)
+		originalFilename := time.Now().Local().String() + "_" + file.Filename
+		originalFilename = strings.Replace(originalFilename, " ", "_", -1)
+file.Filename = uuid.NewString() //File name to store in minio
+
 		c.SaveUploadedFile(file, "./"+file.Filename)
 
 		object, err := os.Open("./" + file.Filename)
