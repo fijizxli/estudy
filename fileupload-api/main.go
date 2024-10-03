@@ -11,6 +11,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+"github.com/google/uuid"
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 )
@@ -59,6 +61,35 @@ func upload(minioClient *minio.Client, c *gin.Context, bucketName string) bool {
 	return false
 }
 
+func tableExists(db *sql.DB, tableName string) bool {
+	var count int = 0
+	db.QueryRow("SELECT count(*) from sqlite_master WHERE name=?", tableName).Scan(&count)
+	return count > 0
+}
+
+func createTables(db *sql.DB, tables []string) {
+	for _, tableName := range tables {
+		if !tableExists(db, tableName) {
+			strs := strings.Split(tableName, "_")
+			createTable := `CREATE TABLE ` + tableName + `(
+				"` + strs[0] + `id" integer NOT NULL PRIMARY KEY,		
+				"filename" TEXT,
+				"` + strs[1] + `id" integer
+				);`
+
+			statement, err := db.Prepare(createTable)
+			if err != nil {
+				log.Fatal(err.Error())
+			}
+
+			statement.Exec()
+			log.Println(tableName + " table have been created.")
+		} else {
+			log.Println(tableName + " already exists.")
+		}
+	}
+}
+
 func main() {
 	r := gin.Default()
 
@@ -80,6 +111,24 @@ func main() {
 	opts := minio.MakeBucketOptions{
 		Region: "auto",
 	}
+
+	info, err := os.Stat("./sqlite.db")
+
+	if info == nil {
+		if os.IsNotExist(err) {
+			file, err := os.Create("./sqlite.db")
+			if err != nil {
+				log.Fatal(err.Error())
+			}
+			file.Close()
+		}
+	}
+
+	tables := []string{"course_cover", "user_avatar", "course_file"}
+
+	db, _ := sql.Open("sqlite3", "./sqlite.db")
+	createTables(db, tables)
+	defer db.Close()
 
 	bucketNames := [3]string{"coursecovers", "profileavatars", "coursefiles"}
 
