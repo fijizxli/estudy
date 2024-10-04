@@ -39,11 +39,6 @@ func insertInfoDB(db *sql.DB, tableName string, filename string, id int, fileId 
 		"` + strs[0] + `id", "filename", "fileextension", "` + strs[1] + `id")
 		VALUES(` + strconv.Itoa(id) + `, ` + "\"" + filename + "\"" + `, ` + "\"" + fileExtension + "\"" + `, ` + "\"" + fileId + "\"" + `);`
 
-	/*
-		fmt.Println("-----------------------------------------")
-		fmt.Println(insertInfo)
-		fmt.Println("-----------------------------------------")
-	*/
 	statement, err := db.Prepare(insertInfo)
 	if err != nil {
 		log.Fatal(err.Error())
