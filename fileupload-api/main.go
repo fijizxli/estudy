@@ -207,10 +207,14 @@ func main() {
 	})
 
 	r.GET("/avatar/:id", func(c *gin.Context) {
-		reqParams := make(url.Values)
-		reqParams.Set("response-content-disposition", "attachment; filename=\"your-filename.txt\"")
+		var fileExtension string
+		var avatarId string
+		db.QueryRow("SELECT fileextension, avatarid from "+tables[1]+" WHERE userid=?", c.Param("id")).Scan(&fileExtension, &avatarId)
 
-		presignedURL, err := minioClient.PresignedGetObject(context.Background(), bucketNames[1], c.Param("objectname"), time.Duration(1000)*time.Second, reqParams)
+		reqParams := make(url.Values)
+		reqParams.Set("response-content-disposition", "attachment; filename=\""+avatarId+fileExtension+"\"")
+
+		presignedURL, err := minioClient.PresignedGetObject(context.Background(), bucketNames[1], avatarId, time.Duration(1000)*time.Second, reqParams)
 		if err != nil {
 			log.Fatalln(err)
 			c.JSON(415, gin.H{
