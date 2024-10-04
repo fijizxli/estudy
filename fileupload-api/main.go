@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"log"
 	"mime/multipart"
 	"net/url"
@@ -21,6 +22,7 @@ import (
 
 func isValidFormat(file *multipart.FileHeader, allowedExtensions []string) bool {
 	fileExtension := strings.ToLower(filepath.Ext(file.Filename))
+	fmt.Println(fileExtension)
 
 	for _, extension := range allowedExtensions {
 		if fileExtension == extension {
@@ -31,19 +33,24 @@ func isValidFormat(file *multipart.FileHeader, allowedExtensions []string) bool 
 	return false
 }
 
-func insertInfoDB(db *sql.DB, tableName string, filename string, id int, fileId string) {
+func insertInfoDB(db *sql.DB, tableName string, filename string, id int, fileId string, fileExtension string) {
 	strs := strings.Split(tableName, "_")
 	insertInfo := `INSERT INTO ` + tableName + ` (
-		"` + strs[0] + `id", "filename", "` + strs[1] + `id")
-		VALUES(` + strconv.Itoa(id) + `, ` + "\"" + filename + "\"" + `, ` + "\"" + fileId + "\"" + `);`
+		"` + strs[0] + `id", "filename", "fileextension", "` + strs[1] + `id")
+		VALUES(` + strconv.Itoa(id) + `, ` + "\"" + filename + "\"" + `, ` + "\"" + fileExtension + "\"" + `, ` + "\"" + fileId + "\"" + `);`
 
+	/*
+		fmt.Println("-----------------------------------------")
+		fmt.Println(insertInfo)
+		fmt.Println("-----------------------------------------")
+	*/
 	statement, err := db.Prepare(insertInfo)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
 	statement.Exec()
-	log.Println("New row (" + strconv.Itoa(id) + ", " + filename + ", " + fileId + ")" + " added to " + tableName + ".")
+	log.Println("New row (" + strconv.Itoa(id) + ", " + filename + ", " + fileExtension + ", " + fileId + ")" + " added to " + tableName + ".")
 }
 
 func upload(minioClient *minio.Client, c *gin.Context, bucketName string, db *sql.DB, tableName string, id int) bool {
@@ -52,8 +59,11 @@ func upload(minioClient *minio.Client, c *gin.Context, bucketName string, db *sq
 	formats := []string{".png", ".jpg", ".pdf", ".docx"}
 
 	if isValidFormat(file, formats) {
+		fileExtension := strings.ToLower(filepath.Ext(file.Filename))
 		originalFilename := time.Now().Local().String() + "_" + file.Filename
 		originalFilename = strings.Replace(originalFilename, " ", "_", -1)
+		originalFilename = strings.TrimSuffix(originalFilename, fileExtension)
+
 		file.Filename = uuid.NewString() //File name to store in minio
 
 		c.SaveUploadedFile(file, "./"+file.Filename)
@@ -73,7 +83,7 @@ func upload(minioClient *minio.Client, c *gin.Context, bucketName string, db *sq
 			log.Fatalln(err)
 		}
 		log.Println("Uploaded", file.Filename, " of size: ", info.Size, "Successfully.")
-		insertInfoDB(db, tableName, originalFilename, id, file.Filename)
+		insertInfoDB(db, tableName, originalFilename, id, file.Filename, fileExtension)
 
 		os.Remove("./" + file.Filename)
 		return true
@@ -94,6 +104,7 @@ func createTables(db *sql.DB, tables []string) {
 			createTable := `CREATE TABLE ` + tableName + `(
 				"` + strs[0] + `id" integer NOT NULL PRIMARY KEY,		
 				"filename" TEXT,
+				"fileextension" TEXT,
 				"` + strs[1] + `id" TEXT
 				);`
 
