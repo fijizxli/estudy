@@ -159,13 +159,13 @@ func main() {
 		}
 	}
 
-	tables := []string{"course_cover", "user_avatar", "course_file"}
+	tables := []string{"course_cover", "user_avatar", "studymaterial_file"}
 
 	db, _ := sql.Open("sqlite3", "./sqlite.db")
 	createTables(db, tables)
 	defer db.Close()
 
-	bucketNames := [3]string{"coursecovers", "profileavatars", "coursefiles"}
+	bucketNames := [3]string{"coursecovers", "profileavatars", "studymaterialfiles"}
 
 	for _, bN := range bucketNames {
 		err = minioClient.MakeBucket(context.Background(), bN, opts)
