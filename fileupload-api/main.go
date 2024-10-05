@@ -119,7 +119,7 @@ func createTables(db *sql.DB, tables []string) {
 func delete(minioClient *minio.Client, db *sql.DB, table string, bucket string, id int) (bool, error) {
 	strs := strings.Split(table, "_")
 	var fileId string
-	db.QueryRow("SELECT fileid from "+table+" WHERE "+strs[0]+"id=?", id).Scan(&fileId)
+	db.QueryRow("SELECT "+strs[1]+"id from "+table+" WHERE "+strs[0]+"id=?", id).Scan(&fileId)
 
 	opts := minio.RemoveObjectOptions{GovernanceBypass: true}
 	err := minioClient.RemoveObject(context.Background(), bucket, fileId, opts)
