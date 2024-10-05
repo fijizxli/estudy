@@ -202,7 +202,7 @@ func main() {
 		}
 	})
 
-	r.POST("/upload/coursefile/:id", func(c *gin.Context) {
+	r.POST("/upload/file/:id", func(c *gin.Context) {
 		id, _ := strconv.Atoi(c.Param("id"))
 		if upload(minioClient, c, bucketNames[2], db, tables[2], id) {
 			c.JSON(200, gin.H{
