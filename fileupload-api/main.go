@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"log"
 	"mime/multipart"
 	"net/url"
@@ -22,7 +21,6 @@ import (
 
 func isValidFormat(file *multipart.FileHeader, allowedExtensions []string) bool {
 	fileExtension := strings.ToLower(filepath.Ext(file.Filename))
-	fmt.Println(fileExtension)
 
 	for _, extension := range allowedExtensions {
 		if fileExtension == extension {
