@@ -124,6 +124,44 @@ func fileExistsForOwner(db *sql.DB, tableName string, id int) bool {
 	return count > 0
 }
 
+func getUrls(db *sql.DB, minioClient *minio.Client, ftype string, table string, bucketName string, c *gin.Context) ([]string, error) {
+	path := c.Request.URL.Path
+	paths := strings.Split(path, "/")
+	id, err := strconv.Atoi(paths[2])
+	if err != nil {
+		log.Println(err)
+	}
+
+	rows, err := db.Query("SELECT fileextension, "+paths[1]+"id from "+table+" WHERE "+ftype+"id=?", id)
+	if err != nil {
+		log.Println(err)
+	}
+
+	defer rows.Close()
+
+	var urls []string
+	var fileExtension string
+	var fileId string
+
+	for rows.Next() {
+		err = rows.Scan(&fileExtension, &fileId)
+		if err != nil {
+			log.Println(err)
+		}
+		reqParams := make(url.Values)
+		reqParams.Set("response-content-disposition", "attachment; filename=\""+fileId+fileExtension+"\"")
+		log.Println(fileId + fileExtension)
+
+		presignedURL, err := minioClient.PresignedGetObject(context.Background(), bucketName, fileId, time.Duration(1000)*time.Second, reqParams)
+		if err != nil {
+			log.Println(err)
+		}
+
+		urls = append(urls, presignedURL.String())
+		log.Println(presignedURL)
+	}
+	return urls, err
+}
 
 func main() {
 	r := gin.Default()
@@ -216,14 +254,36 @@ func main() {
 	})
 
 	r.GET("/avatar/:id", func(c *gin.Context) {
-		var fileExtension string
-		var avatarId string
-		db.QueryRow("SELECT fileextension, avatarid from "+tables[1]+" WHERE userid=?", c.Param("id")).Scan(&fileExtension, &avatarId)
+		urls, err := getUrls(db, minioClient, "avatar", tables[1], bucketNames[1], c)
 
-		reqParams := make(url.Values)
-		reqParams.Set("response-content-disposition", "attachment; filename=\""+avatarId+fileExtension+"\"")
+		if err != nil {
+			log.Fatalln(err)
+			c.JSON(415, gin.H{
+				"error": "unsupported file format",
+			})
+		}
+		c.JSON(200, gin.H{
+			"url": urls,
+		})
+	})
 
-		presignedURL, err := minioClient.PresignedGetObject(context.Background(), bucketNames[1], avatarId, time.Duration(1000)*time.Second, reqParams)
+	r.GET("/cover/:id", func(c *gin.Context) {
+		urls, err := getUrls(db, minioClient, "course", tables[0], bucketNames[0], c)
+
+		if err != nil {
+			log.Fatalln(err)
+			c.JSON(415, gin.H{
+				"error": "unsupported file format",
+			})
+		}
+		c.JSON(200, gin.H{
+			"url": urls,
+		})
+	})
+
+	r.GET("/file/:id", func(c *gin.Context) {
+		urls, err := getUrls(db, minioClient, "studymaterial", tables[2], bucketNames[2], c)
+
 		if err != nil {
 			log.Fatalln(err)
 			c.JSON(415, gin.H{
@@ -232,7 +292,10 @@ func main() {
 		}
 		log.Println(presignedURL)
 		c.JSON(200, gin.H{
-			"url": presignedURL.String(),
+			"urls": urls,
+		})
+	})
+
 		})
 	})
 
