@@ -48,41 +48,41 @@ func insertInfoDB(db *sql.DB, tableName string, filename string, id int, fileId 
 
 func upload(minioClient *minio.Client, c *gin.Context, bucketName string, db *sql.DB, tableName string, id int) bool {
 	if !fileExistsForOwner(db, tableName, id) {
-	file, _ := c.FormFile("file")
+		file, _ := c.FormFile("file")
 
-	formats := []string{".png", ".jpg", ".pdf", ".docx"}
+		formats := []string{".png", ".jpg", ".pdf", ".docx"}
 
-	if isValidFormat(file, formats) {
-		fileExtension := strings.ToLower(filepath.Ext(file.Filename))
-		originalFilename := time.Now().Local().String() + "_" + file.Filename
-		originalFilename = strings.Replace(originalFilename, " ", "_", -1)
-		originalFilename = strings.TrimSuffix(originalFilename, fileExtension)
+		if isValidFormat(file, formats) {
+			fileExtension := strings.ToLower(filepath.Ext(file.Filename))
+			originalFilename := time.Now().Local().String() + "_" + file.Filename
+			originalFilename = strings.Replace(originalFilename, " ", "_", -1)
+			originalFilename = strings.TrimSuffix(originalFilename, fileExtension)
 
-		file.Filename = uuid.NewString() //File name to store in minio
+			file.Filename = uuid.NewString() //File name to store in minio
 
-		c.SaveUploadedFile(file, "./"+file.Filename)
+			c.SaveUploadedFile(file, "./"+file.Filename)
 
-		object, err := os.Open("./" + file.Filename)
-		if err != nil {
-			log.Fatalln(err)
+			object, err := os.Open("./" + file.Filename)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			defer object.Close()
+			objectStat, err := object.Stat()
+			if err != nil {
+				log.Fatalln(err)
+			}
+
+			info, err := minioClient.PutObject(context.Background(), bucketName, file.Filename, object, objectStat.Size(), minio.PutObjectOptions{ContentType: "application/octet-stream"})
+			if err != nil {
+				log.Fatalln(err)
+			}
+			log.Println("Uploaded", file.Filename, " of size: ", info.Size, "Successfully.")
+			insertInfoDB(db, tableName, originalFilename, id, file.Filename, fileExtension)
+
+			os.Remove("./" + file.Filename)
+			return true
 		}
-		defer object.Close()
-		objectStat, err := object.Stat()
-		if err != nil {
-			log.Fatalln(err)
-		}
-
-		info, err := minioClient.PutObject(context.Background(), bucketName, file.Filename, object, objectStat.Size(), minio.PutObjectOptions{ContentType: "application/octet-stream"})
-		if err != nil {
-			log.Fatalln(err)
-		}
-		log.Println("Uploaded", file.Filename, " of size: ", info.Size, "Successfully.")
-		insertInfoDB(db, tableName, originalFilename, id, file.Filename, fileExtension)
-
-		os.Remove("./" + file.Filename)
-		return true
 	}
-}
 	log.Println("file already exists.")
 	return false
 }
@@ -98,12 +98,11 @@ func createTables(db *sql.DB, tables []string) {
 		if !tableExists(db, tableName) {
 			strs := strings.Split(tableName, "_")
 			createTable := `CREATE TABLE ` + tableName + `(
-				"` + strs[0] + `id" integer NOT NULL PRIMARY KEY,		
-				"filename" TEXT,
-				"fileextension" TEXT,
-				"` + strs[1] + `id" TEXT
-				);`
-
+					"` + strs[0] + `id" integer NOT NULL PRIMARY KEY,
+					"filename" TEXT,
+					"fileextension" TEXT,
+					"` + strs[1] + `id" TEXT
+					);`
 			statement, err := db.Prepare(createTable)
 			if err != nil {
 				log.Fatal(err.Error())
@@ -115,6 +114,24 @@ func createTables(db *sql.DB, tables []string) {
 			log.Println(tableName + " already exists.")
 		}
 	}
+}
+
+func delete(minioClient *minio.Client, db *sql.DB, table string, bucket string, id int) (bool, error) {
+	strs := strings.Split(table, "_")
+	var fileId string
+	db.QueryRow("SELECT fileid from "+table+" WHERE "+strs[0]+"id=?", id).Scan(&fileId)
+
+	opts := minio.RemoveObjectOptions{GovernanceBypass: true}
+	err := minioClient.RemoveObject(context.Background(), bucket, fileId, opts)
+
+	if err != nil {
+		log.Println(err)
+		return false, err
+	}
+
+	_, err = db.Exec("DELETE from "+table+" WHERE "+strs[0]+"id=?", id)
+
+	return true, err
 }
 
 func fileExistsForOwner(db *sql.DB, tableName string, id int) bool {
@@ -290,14 +307,69 @@ func main() {
 				"error": "unsupported file format",
 			})
 		}
-		log.Println(presignedURL)
 		c.JSON(200, gin.H{
 			"urls": urls,
 		})
 	})
 
-		})
+	r.DELETE("/file/:id", func(c *gin.Context) {
+		id, err := strconv.Atoi(c.Param("id"))
+
+		if err != nil {
+			log.Println(err)
+		}
+
+		res, err := delete(minioClient, db, tables[2], bucketNames[2], id)
+
+		if err != nil {
+			c.JSON(500, gin.H{
+				"deleted": res,
+			})
+		} else {
+			c.JSON(200, gin.H{
+				"deleted": res,
+			})
+		}
 	})
 
+	r.DELETE("/cover/:id", func(c *gin.Context) {
+		id, err := strconv.Atoi(c.Param("id"))
+
+		if err != nil {
+			log.Println(err)
+		}
+
+		res, err := delete(minioClient, db, tables[0], bucketNames[0], id)
+
+		if err != nil {
+			c.JSON(500, gin.H{
+				"deleted": res,
+			})
+		} else {
+			c.JSON(200, gin.H{
+				"deleted": res,
+			})
+		}
+	})
+
+	r.DELETE("/avatar/:id", func(c *gin.Context) {
+		id, err := strconv.Atoi(c.Param("id"))
+
+		if err != nil {
+			log.Println(err)
+		}
+
+		res, err := delete(minioClient, db, tables[1], bucketNames[1], id)
+
+		if err != nil {
+			c.JSON(500, gin.H{
+				"deleted": res,
+			})
+		} else {
+			c.JSON(200, gin.H{
+				"deleted": res,
+			})
+		}
+	})
 	r.Run(":8082")
 }
