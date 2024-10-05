@@ -371,5 +371,75 @@ func main() {
 			})
 		}
 	})
+
+	r.PUT("/avatar/:id", func(c *gin.Context) {
+		id, err := strconv.Atoi(c.Param("id"))
+
+		if err != nil {
+			log.Println(err)
+		}
+
+		res, err := delete(minioClient, db, tables[1], bucketNames[1], id)
+
+		if err != nil {
+			log.Fatalln(err)
+		}
+		if res && upload(minioClient, c, bucketNames[1], db, tables[1], id) {
+			c.JSON(200, gin.H{
+				"message": "file uploaded successfully.",
+			})
+		} else {
+			c.JSON(415, gin.H{
+				"error": "unsupported file format",
+			})
+		}
+	})
+
+	r.PUT("/cover/:id", func(c *gin.Context) {
+		id, err := strconv.Atoi(c.Param("id"))
+
+		if err != nil {
+			log.Println(err)
+		}
+
+		res, err := delete(minioClient, db, tables[1], bucketNames[1], id)
+
+		if err != nil {
+			log.Fatalln(err)
+		}
+		if res && upload(minioClient, c, bucketNames[1], db, tables[1], id) {
+			c.JSON(200, gin.H{
+				"message": "file uploaded successfully.",
+			})
+		} else {
+			c.JSON(415, gin.H{
+				"error": "unsupported file format",
+			})
+		}
+	})
+
+	r.PUT("/file/:id", func(c *gin.Context) {
+		id, err := strconv.Atoi(c.Param("id"))
+
+		if err != nil {
+			log.Println(err)
+		}
+
+		res, err := delete(minioClient, db, tables[1], bucketNames[1], id)
+
+		if err != nil {
+			log.Fatalln(err)
+		}
+		if res && upload(minioClient, c, bucketNames[1], db, tables[1], id) {
+			c.JSON(200, gin.H{
+				"message": "file uploaded successfully.",
+			})
+		} else {
+			c.JSON(415, gin.H{
+				"error": "unsupported file format",
+			})
+		}
+	})
+
 	r.Run(":8082")
 }
