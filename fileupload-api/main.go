@@ -47,6 +47,7 @@ func insertInfoDB(db *sql.DB, tableName string, filename string, id int, fileId 
 }
 
 func upload(minioClient *minio.Client, c *gin.Context, bucketName string, db *sql.DB, tableName string, id int) bool {
+	if !fileExistsForOwner(db, tableName, id) {
 	file, _ := c.FormFile("file")
 
 	formats := []string{".png", ".jpg", ".pdf", ".docx"}
@@ -81,6 +82,8 @@ func upload(minioClient *minio.Client, c *gin.Context, bucketName string, db *sq
 		os.Remove("./" + file.Filename)
 		return true
 	}
+}
+	log.Println("file already exists.")
 	return false
 }
 
@@ -113,6 +116,14 @@ func createTables(db *sql.DB, tables []string) {
 		}
 	}
 }
+
+func fileExistsForOwner(db *sql.DB, tableName string, id int) bool {
+	var count int = 0
+	strs := strings.Split(tableName, "_")
+	db.QueryRow("SELECT count(*) from "+tableName+" WHERE "+strs[0]+"id=?", id).Scan(&count)
+	return count > 0
+}
+
 
 func main() {
 	r := gin.Default()
