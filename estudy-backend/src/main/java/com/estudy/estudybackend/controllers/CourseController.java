@@ -8,6 +8,7 @@ import com.estudy.estudybackend.models.dtos.CourseDtoMin;
 import com.estudy.estudybackend.models.dtos.StudentDto;
 import com.estudy.estudybackend.repositories.RoleRepository;
 import com.estudy.estudybackend.services.CourseService;
+import com.estudy.estudybackend.services.MigrationService;
 import com.estudy.estudybackend.services.UserDetailServiceImpl;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,9 @@ public class CourseController {
 
     @Autowired
     private CourseService cs;
+
+    @Autowired
+    private MigrationService migrationService;
 
     @Autowired
     private RoleRepository roleRepository;
@@ -114,6 +118,7 @@ public class CourseController {
         User lecturer = userService.findByUsername(c.getLecturerName());
         c = new Course(c.getTitle(), c.getDescription(), lecturer);
         cs.saveCourse(c);
+        migrationService.migrateLecturer(lecturer.getId()); // new course gets added when updating lecturers
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
@@ -143,6 +148,8 @@ public class CourseController {
             }
         }
         cs.saveCourse(existingCourse);
+        migrationService.updateCourse(courseId);
+        migrationService.updateLecturer(existingCourse.getId());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
