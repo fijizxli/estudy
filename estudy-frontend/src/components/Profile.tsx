@@ -1,4 +1,4 @@
-import axios from "../axios";
+import axios, { fileupload } from "../axios";
 import {useState, useEffect} from 'react'
 import {Link, Navigate} from 'react-router-dom';
 import {useAuth} from "../context";
@@ -6,11 +6,13 @@ import {Card, CardHeader, CardContent, CardTitle, CardDescription } from "./ui/c
 import { Label } from "./ui/label";
 import { Course } from '../types';
 import { PersonIcon } from "@radix-ui/react-icons";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 export default function MyCourses() {
     const { user } = useAuth(); 
     const [courses, setCourses] = useState([]);
     const [lecturerCourses, setLecturerCourses] = useState([]);
+    const [avatarPath, setAvatarPath] = useState<string>("");
 
     useEffect(()=> {
             axios.get('/' + user?.username + '/courses', {
@@ -32,10 +34,20 @@ export default function MyCourses() {
                         })
                     }
             },[]) ;
+    if (user != null){
+        fileupload.get("/avatar/"+user.id.toString()).then( response => {
+            setAvatarPath(response.data.url[0]);
+        }
+        );
+    }
 
     return user?.isLoggedIn ? (
         <div className="m-auto pt-10">
-            <Label className="text-3xl flex m-auto pt-20 justify-center"><PersonIcon className="mr-2 h-9 w-9"/><b>Profile</b></Label>
+            <Label className="text-3xl flex m-auto pt-20 pb-4 justify-center"><b>Profile</b></Label>
+            <Avatar className="w-40 h-40 m-auto p-auto border-solid border-2 border-black justify-center">
+                <AvatarImage src={avatarPath}/>
+                <AvatarFallback><PersonIcon/></AvatarFallback>
+            </Avatar>
             <Label className="text-2xl lg:text-3xl flex mb-auto pt-10 pl-20"><b>Profile details:</b></Label>
             <div className=" grid grid-cols-1 lg:w-11/12 xl:w-9/12 m-auto">
                 <Card className="flex flex-col m-auto w-mt-4 mb-4 p-4 break-words mb hover:bg-slate-200">
