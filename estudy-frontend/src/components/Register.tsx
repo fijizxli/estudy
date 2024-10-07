@@ -7,6 +7,7 @@ import closeButton from "../../close-button.svg";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
+import { fileupload } from "@/axios";
 
 export default function Register() {
     const [username, setUsername] = useState("");
@@ -14,6 +15,13 @@ export default function Register() {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const [errorPresent, setErrorPresent] = useState(false);
+    const [file, setFile] = useState<File | null>(null);
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            setFile(e.target.files[0]);
+        }
+    };
 
     const { setModalType } = useAuth();
 
@@ -28,14 +36,35 @@ export default function Register() {
                 }
             )
             e.preventDefault();
-            await axios.post(
-                "/register",data,
+            const response = await axios.post(
+                "/register", data,
                 {
                     headers: {
                         'Content-Type':'application/json',
                     },
                 }
             );
+            console.log(file, response.status);
+
+            if (file != null && response.status === 201){
+                const formData = new FormData();
+                formData.append('file', file);
+                const credentials = `${username}:${password}`;
+                const user = btoa(credentials);
+                const userResponse = await axios.get("/userbyname/"+username,
+                    {
+                        headers: {
+                            'Authorization': `Basic ${user}`,
+                            'Content-Type': 'application/json',
+                    }});
+
+                const response = await fileupload.post("/upload/avatar/"+userResponse.data.id, formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    }, 
+                })
+                console.log(response);
+            }
 
             setErrorPresent(false);
             setModalType("Inactive");
@@ -102,6 +131,10 @@ export default function Register() {
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         required
                     />
+                    </div>
+                    <div className="grid max-w-sm items-center gap-1. 5w-100 pu-0 mb-2 mu-8 inline-block radius-10 box">
+                    <Label htmlFor="picture">Profile picture</Label>
+                    <Input id="file" type="file" onChange={handleFileChange} />
                     </div>
                     <Button type="submit">
                         Register
