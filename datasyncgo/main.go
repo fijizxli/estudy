@@ -212,7 +212,6 @@ func main() {
 			panic(err)
 		}
 
-		fmt.Println(lecturer)
 		lecturer_id, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
 			panic(err)
@@ -230,6 +229,13 @@ func main() {
 		var courseIDs []int
 		for _, course := range lecturer.Courses {
 			courseIDs = append(courseIDs, course.ID)
+
+			var newCourse Course
+			courseFilter := bson.D{{Key: "_id", Value: course.ID}}
+			err := courseCollection.FindOne(context.TODO(), courseFilter).Decode(&newCourse)
+			if err != nil {
+				courseCollection.InsertOne(context.TODO(), course)
+			}
 
 			for _, mongoCourseID := range lecturerMongo.CourseIDs {
 				if course.ID != mongoCourseID {
