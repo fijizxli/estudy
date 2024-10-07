@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"log"
 	"mime/multipart"
+	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -141,15 +142,16 @@ func fileExistsForOwner(db *sql.DB, tableName string, id int) bool {
 	return count > 0
 }
 
-func getUrls(db *sql.DB, minioClient *minio.Client, ftype string, table string, bucketName string, c *gin.Context) ([]string, error) {
+func getUrls(db *sql.DB, minioClient *minio.Client, table string, bucketName string, c *gin.Context) ([]string, error) {
 	path := c.Request.URL.Path
 	paths := strings.Split(path, "/")
 	id, err := strconv.Atoi(paths[2])
+	strs := strings.Split(table, "_")
 	if err != nil {
 		log.Println(err)
 	}
 
-	rows, err := db.Query("SELECT fileextension, "+paths[1]+"id from "+table+" WHERE "+ftype+"id=?", id)
+	rows, err := db.Query("SELECT fileextension, "+paths[1]+"id from "+table+" WHERE "+strs[0]+"id=?", id)
 	if err != nil {
 		log.Println(err)
 	}
@@ -182,6 +184,19 @@ func getUrls(db *sql.DB, minioClient *minio.Client, ftype string, table string, 
 
 func main() {
 	r := gin.Default()
+
+	r.Use(func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(http.StatusOK)
+			return
+		}
+
+		c.Next()
+	})
 
 	endpoint := "localhost:9000"
 	accessKeyID := "1ZKMFFahuTs4p32JM21T"
@@ -271,7 +286,7 @@ func main() {
 	})
 
 	r.GET("/avatar/:id", func(c *gin.Context) {
-		urls, err := getUrls(db, minioClient, "avatar", tables[1], bucketNames[1], c)
+		urls, err := getUrls(db, minioClient, tables[1], bucketNames[1], c)
 
 		if err != nil {
 			log.Fatalln(err)
@@ -285,7 +300,7 @@ func main() {
 	})
 
 	r.GET("/cover/:id", func(c *gin.Context) {
-		urls, err := getUrls(db, minioClient, "course", tables[0], bucketNames[0], c)
+		urls, err := getUrls(db, minioClient, tables[0], bucketNames[0], c)
 
 		if err != nil {
 			log.Fatalln(err)
@@ -299,7 +314,7 @@ func main() {
 	})
 
 	r.GET("/file/:id", func(c *gin.Context) {
-		urls, err := getUrls(db, minioClient, "studymaterial", tables[2], bucketNames[2], c)
+		urls, err := getUrls(db, minioClient, tables[2], bucketNames[2], c)
 
 		if err != nil {
 			log.Fatalln(err)
