@@ -65,6 +65,27 @@ services:
      - ./mongodata:/mongodata/db
      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 
+  minio:
+    image: quay.io/minio/minio
+    container_name: minio
+    restart: unless-stopped
+    command: server --console-address ":9001" /data
+    networks:
+      - net
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    environment:
+     - MINIO_ROOT_USER=root
+     - MINIO_ROOT_PASSWORD=example1
+    volumes:
+     - ./miniodata:/data
+    ports:
+      - 9001:9001
+      - 9000:9000
+
 volumes:
   estudy-data:
 

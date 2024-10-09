@@ -16,6 +16,7 @@ import com.estudy.estudybackend.repositories.CourseRepository;
 import com.estudy.estudybackend.repositories.RoleRepository;
 import com.estudy.estudybackend.repositories.StudyMaterialRepository;
 import com.estudy.estudybackend.repositories.UserRepository;
+import com.estudy.estudybackend.services.MigrationService;
 
 @SpringBootApplication
 public class EstudyBackendApplication {
@@ -35,6 +36,9 @@ public class EstudyBackendApplication {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    MigrationService migrationService;
 
     public void genSampleData(){
         User test_lecturer_john = userRepository.findByUsername("John");
@@ -75,7 +79,9 @@ public class EstudyBackendApplication {
         studyMaterialRepository.save(c1_s2);
         studyMaterialRepository.save(c2_s1);
         studyMaterialRepository.save(c3_s1);
-   }
+
+        migrationService.migrateAll();
+    }
 
     @Value("${admin.username}")
     private String adminUsername;
@@ -88,7 +94,6 @@ public class EstudyBackendApplication {
 
     @Bean
     public CommandLineRunner dataLoader(UserRepository userRepository, PasswordEncoder encoder){
-
         if (dataGen){
             if (roleRepository.findByName("ADMIN") == null){
                 Role adminRole = new Role("ADMIN");

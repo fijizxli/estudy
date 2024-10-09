@@ -1,0 +1,1 @@
+curl -H Content-Type: multipart/form-data -F file=@coop.png localhost:8082/cover/upload

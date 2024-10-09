@@ -6,19 +6,29 @@ import { PersonIcon } from "@radix-ui/react-icons"
 import { ExitIcon } from "@radix-ui/react-icons"
 import { useMediaQuery } from 'react-responsive';
 import { User } from '../types';
-import { useEffect } from 'react'
+import {useState, useEffect} from 'react'
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { fileupload } from '@/axios'
 
 export default function Navbar() {
     const { user, login, setModalType, logout } = useAuth();
+    const [avatarPath, setAvatarPath] = useState<string>("");
     const isPhone: boolean = useMediaQuery({maxWidth: 768});
 
     useEffect(() => {
         const loggedInUser = localStorage.getItem("user");
         if (loggedInUser) {
-          const foundUser: User = JSON.parse(loggedInUser!);
-          login(foundUser);
+            const foundUser: User = JSON.parse(loggedInUser!);
+            login(foundUser);
         }
-      }, []);
+
+    }, []);
+    if (user != null){
+        fileupload.get("/avatar/"+user.id.toString()).then( response => {
+            setAvatarPath(response.data.url[0]);
+        }
+        );
+    }
 
     const SignIn = () => {
 
@@ -67,6 +77,10 @@ export default function Navbar() {
                                 <Link to="/courses/create"><b>New course</b></Link>
                             </li>
                             <li className='m-auto'></li>
+                            <Avatar className="border-solid border-2 border-black">
+                                <AvatarImage src={avatarPath}/>
+                                <AvatarFallback><PersonIcon/></AvatarFallback>
+                            </Avatar>
                             <li className="m-2">
                                 <Link to="/profile">
                                     <Button><PersonIcon className="mr-2 h-4 w-4"/>{user?.username}</Button>
@@ -97,6 +111,10 @@ export default function Navbar() {
                                 <Link to="/courses/create"><b>New course</b></Link>
                             </li>
                             <li className='m-auto'></li>
+                            <Avatar className="border-solid border-2 border-black">
+                                <AvatarImage src={avatarPath}/>
+                                <AvatarFallback><PersonIcon/></AvatarFallback>
+                            </Avatar>
                             <li className="m-2">
                                 <Link to="/profile">
                                     <Button className="h-9 w-9 p-0"><PersonIcon className="h-6 w-6"/></Button>
