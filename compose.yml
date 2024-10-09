@@ -62,8 +62,8 @@ services:
 
     command: --auth
     volumes:
-     - ./mongodata:/mongodata/db
-     - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - ./mongodata:/mongodata/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 
   minio:
     image: quay.io/minio/minio
@@ -78,10 +78,10 @@ services:
       timeout: 5s
       retries: 5
     environment:
-     - MINIO_ROOT_USER=root
-     - MINIO_ROOT_PASSWORD=example1
+      - MINIO_ROOT_USER=root
+      - MINIO_ROOT_PASSWORD=example1
     volumes:
-     - ./miniodata:/data
+      - ./miniodata:/data
     ports:
       - 9001:9001
       - 9000:9000
