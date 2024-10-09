@@ -12,7 +12,7 @@ import EditCourse from './components/EditCourse';
 import AddStudyMaterial from './components/AddStudyMaterial';
 import StudyMaterial from './components/StudyMaterial';
 import EditStudyMaterial from './components/EditStudyMaterial';
-import MyCourses from './components/MyCourses';
+import Profile from './components/Profile';
 
 function App() {
 
@@ -21,8 +21,7 @@ function App() {
       <BrowserRouter>
         <Navbar/>
         <Routes>
-          <Route path = "/" element={<MyCourses/>}/>;
-          <Route path = "mycourses" element={<MyCourses/>}/>;
+          <Route path = "/" element={<Profile/>}/>;
           <Route path = "courses" element={<CourseList/>}/>;
           <Route path = "courses/create" element={<AddCourse/>}/>;
           <Route path = "courses/:courseId" element={<Course/>}/>;
@@ -30,6 +29,7 @@ function App() {
           <Route path = "courses/:courseId/:studyMaterialId" element={<StudyMaterial/>}/>;
           <Route path = "courses/:courseId/create" element={<AddStudyMaterial/>}/>;
           <Route path = "courses/edit/:courseId/:studyMaterialId" element={<EditStudyMaterial/>}/>;
+          <Route path = "profile" element={<Profile/>}/>;
         </Routes>
         <AuthenticationModal/>
       </BrowserRouter>

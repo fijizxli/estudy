@@ -6,3 +6,4 @@ kube.yml
 .env
 estudy-pod.yml
 old-estudy-frontend/
+miniodata/

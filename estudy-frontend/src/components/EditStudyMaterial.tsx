@@ -30,7 +30,6 @@ export default function EditStudyMaterial() {
                     'Content-Type': 'application/json',
                 }},
             )
-            console.log(response.data);
             setTitle(response.data.title);
             setDescription(response.data.description);
             setIsLoading(false);
@@ -58,7 +57,6 @@ export default function EditStudyMaterial() {
             );
             alert("Study material edited.");
         } catch (error) {
-            console.log(error);
             alert(error);
         }
         nav(`/courses/${courseId}/${studyMaterialId}`);
@@ -103,37 +101,5 @@ export default function EditStudyMaterial() {
             </form>
         </div>) : <Navigate replace to="/"/>;
     }
-
-        /*
-    return user?.isLoggedIn ? (<div className="addform">
-        <h1>Edit study material:</h1>
-        <form onSubmit={handleSubmit}>
-            <label htmlFor="title">Title</label><br/>
-            <input
-                className="inputTitle"
-                type="text"
-                onChange={(e: any) => setTitle(e.target.value)}
-                placeholder="title"
-                id="title"
-                value={title}
-                defaultValue={studyMaterial.title}
-                required
-            /><br/>
-            <label htmlFor="description">Description</label><br/>
-            <textarea
-                className="inputDescription"
-                onChange={(e: any) => setDescription(e.target.value)}
-                placeholder="Description"
-                id="description"
-                value={description}
-                defaultValue={studyMaterial.description}
-                required
-            ></textarea><br/>
-
-            <button className="tablebutton" type="submit">
-                Edit
-            </button>
-        </form>
-    </div>) : <Navigate replace to="/"/>;*/
 
 }

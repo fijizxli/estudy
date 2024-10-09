@@ -1,0 +1,138 @@
+@page "/course/{CourseId:int}"
+@using System.Runtime.CompilerServices
+@using estudyRatings.Components.Models
+@rendermode InteractiveServer
+
+@inject CourseService CourseService
+@inject CourseRatingService CourseRatingService
+
+
+@if (_Course != null){
+    <PageTitle>📓 @_Course.Title</PageTitle>
+    <h1>📓 @_Course.Title</h1>
+    <a href="lecturer/@_Course.Lecturer"><h2>Lecturer: @_Course.LecturerName</h2></a>
+    <p>@_Course.Description</p>
+    <h3>⭐ Ratings:</h3>
+    @if (ratings != null){
+        <ul>
+            <li>
+                Practival application: @AvgPracticalApplicationScore
+            </li>
+            <li>
+                Assignments: @AvgAssignmentsScore
+            </li>
+            <li>
+                Grading: @AvgGradingScore
+            </li>
+        </ul>
+    }
+    <h4>🆕 Add new rating:</h4>
+    <EditForm Model="@rating" OnValidSubmit="Submit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+    <div class="ratingform">
+        <div>
+            <label>Practical application: </label>
+            <InputNumber Min=1 Max=10 @bind-Value="rating.PracticalApplication"/>
+        </div>
+        <div>
+            <label>Assignments: </label>
+            <InputNumber Min=1 Max=10 @bind-Value="rating.Assignments"/>
+        </div>
+        <div>
+            <label>Grading: </label>
+            <InputNumber Min=1 Max=10 @bind-Value="rating.Grading"/>
+        </div>
+        <div>
+            <label>Comment: </label>
+            <InputTextArea @bind-Value="rating.Comment"/>
+        </div>
+        <button class="btn btn-primary" type="submit">Submit</button>
+    </div>
+    </EditForm>
+    <br>
+    <h3>🗩 Comments:</h3>
+    <hr>
+    @if (ratings != null){
+        @foreach (var r in ratings){
+            {
+                <div class="commentcontainer">
+                @if (@r.Comment != null){
+                    <div class="comment">
+                        <h6>@r.DateAdded</h6>
+                        <p>@r.Comment</p>
+                    </div>
+                    <br>
+                }
+                </div>
+            }
+        }
+    }
+
+} else {
+    <PageTitle>loading...</PageTitle>
+    <h2>loading...</h2>
+}
+
+
+@code {
+    private Course _Course = new Course();
+
+    [Parameter]
+    public int CourseId {get; set;}
+
+    private CourseRating rating = new CourseRating();
+    private List<CourseRating> ratings = new List<CourseRating>();
+
+    private float AvgPracticalApplicationScore;
+    private float AvgAssignmentsScore;
+    private float AvgGradingScore;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetCourse();
+        await GetRatingsByCourseId();
+    }
+    private async Task GetCourse()
+    {
+        _Course = await CourseService.GetCourseByIdAsync(CourseId.ToString());
+    }
+    private float Avg(List<int> ints){
+        if (ints.Count != 0){
+            int sum = 0;
+            foreach (int i in ints){
+                sum += i;
+            }
+            return sum / ints.Count;
+        }
+        return 0;
+    }
+    
+    private async Task GetRatingsByCourseId()
+    {
+        List<int> PracticalApplicationScores = new List<int>();
+        List<int> AssignmentsScores = new List<int>();
+        List<int> GradingScores = new List<int>();
+        ratings = await CourseRatingService.GetRatingsByCourseIdAsync(_Course.Id);
+        foreach (var r in ratings){
+            PracticalApplicationScores.Add(r.PracticalApplication);
+            AssignmentsScores.Add(r.Assignments);
+            GradingScores.Add(r.Grading);
+        }      
+        AvgPracticalApplicationScore = Avg(PracticalApplicationScores);
+        AvgAssignmentsScore = Avg(AssignmentsScores);
+        AvgGradingScore = Avg(GradingScores);
+    }
+
+
+    private async Task Submit(){
+        if (rating != null){
+            rating.CourseId= _Course.Id;
+            rating.DateAdded = DateTime.Now;
+            var newRating = await CourseRatingService.InsertRating(rating);
+            await CourseService.AddRatingToCourse(_Course.Id, newRating.Id);
+        }
+        rating = new CourseRating();
+    }
+}

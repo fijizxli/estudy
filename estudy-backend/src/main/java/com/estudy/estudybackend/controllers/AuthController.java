@@ -24,7 +24,6 @@ public class AuthController {
             registrationService.registerUser(user);
             return new ResponseEntity<>(HttpStatus.CREATED);
         } catch (Exception e){
-            System.out.println(e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

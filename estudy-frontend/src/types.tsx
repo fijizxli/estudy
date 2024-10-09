@@ -1,15 +1,17 @@
 export type User  = {
-    username: string | null;
-    auth: string | null;
-    id: number | null;
-    isLoggedIn: boolean| null;
+    username: string;
+    emailAddress: string;
+    auth: string;
+    id: number;
+    role: string;
+    isLoggedIn: boolean;
 }
 
 export type Course = {
     id: number | null;
     title: string | null;
     description: string | null;
-    lecturer: string | null;
+    lecturerName: string | null;
     studyMaterials: [];
 }
 

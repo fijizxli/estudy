@@ -37,7 +37,7 @@ export default function AddStudyMaterial() {
 
     return user?.isLoggedIn ? (
     <div className="max-w-80 m-auto pt-10">
-        <Label className="text-3xl flex m-auto pt-20 pb-10 justify-center"><b>Add a new course:</b></Label>
+        <Label className="text-3xl flex m-auto pt-20 pb-10 justify-center"><b>Add a new study material:</b></Label>
         <form onSubmit={handleSubmit}>
             <label htmlFor="title">Title</label><br/>
             <Input

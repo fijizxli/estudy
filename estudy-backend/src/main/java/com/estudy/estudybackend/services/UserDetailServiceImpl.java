@@ -1,11 +1,16 @@
 package com.estudy.estudybackend.services;
 
 import com.estudy.estudybackend.models.Course;
+import com.estudy.estudybackend.models.Role;
 import com.estudy.estudybackend.models.User;
 import com.estudy.estudybackend.repositories.CourseRepository;
 import com.estudy.estudybackend.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+
+import java.util.Set;
+
+import javax.management.relation.RoleNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -31,6 +36,10 @@ public class UserDetailServiceImpl implements UserDetailsService {
 
     public User findByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByUsername(username);
+    }
+
+    public Set<User> findByRole(Role role) throws RoleNotFoundException {
+        return userRepository.findByRole(role);
     }
 
     public User findById(Long id) throws UsernameNotFoundException {

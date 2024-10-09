@@ -2,6 +2,9 @@ package com.estudy.estudybackend.services;
 
 import com.estudy.estudybackend.models.Course;
 import com.estudy.estudybackend.models.StudyMaterial;
+import com.estudy.estudybackend.models.User;
+import com.estudy.estudybackend.models.dtos.CourseDto;
+import com.estudy.estudybackend.models.dtos.StudentDto;
 import com.estudy.estudybackend.repositories.CourseRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
@@ -23,14 +26,38 @@ public class CourseService {
     private EntityManager entityManager;
 
     public Course getCourseById(Long courseId){
-
         return courseRepository.findById(courseId).orElse(null);
     }
 
-    public List<Course> getCourses() {
+    public List<Course> getCoursesByLecturer(User lecturer){
+        return courseRepository.findByLecturer(lecturer);
+    }
+
+    public List<CourseDto> getCourses() {
+        List<CourseDto> courses = new ArrayList<CourseDto>();
+        courseRepository.findAll();
         Iterable<Course> coursesIt = courseRepository.findAll();
-        List<Course> courses = new ArrayList<Course>();
-        coursesIt.forEach(courses::add);
+        List<StudentDto> students = new ArrayList<>();
+        for (Course course : coursesIt){
+            for (User user: course.getStudents()){
+                students.add(
+                    new StudentDto(
+                        user.getId(), user.getUsername(), user.getEmailAddress()
+                    )
+                );
+            }
+            courses.add(
+                new CourseDto(
+                    course.getId(),
+                    course.getTitle(),
+                    course.getDescription(),
+                    course.getLecturerName(),
+                    course.getStudyMaterials(),
+                    students
+                )
+            );
+        }
+
         return courses;
     }
 

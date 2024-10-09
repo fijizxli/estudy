@@ -15,6 +15,7 @@ services:
       DB_HOST: db
       DB_USER: db_user
       DB_PASSWORD: password
+      DATAGEN: 1
       ADMIN_USERNAME: admin
       ADMIN_PASSWORD: password
       API_KEY: key
@@ -37,15 +38,53 @@ services:
       - estudy-data:/var/lib/mysql
     networks: 
       - net
-        #    ports:
-        #      - 3306:3306
+    ports:
+      - 3306:3306
     expose:
-      - 3306
+      - 3306:3306
     environment:
       MYSQL_USER: db_user
       MYSQL_ROOT_PASSWORD: password
       MYSQL_PASSWORD: password
       MYSQL_DATABASE: estudy
+    
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    networks: 
+      - net
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "root"
+      MONGO_INITDB_ROOT_PASSWORD: "example"
+      MONGO_INITDB_DATABASE: "ratings"
+
+    command: --auth
+    volumes:
+     - ./mongodata:/mongodata/db
+     - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+
+  minio:
+    image: quay.io/minio/minio
+    container_name: minio
+    restart: unless-stopped
+    command: server --console-address ":9001" /data
+    networks:
+      - net
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    environment:
+     - MINIO_ROOT_USER=root
+     - MINIO_ROOT_PASSWORD=example1
+    volumes:
+     - ./miniodata:/data
+    ports:
+      - 9001:9001
+      - 9000:9000
 
 volumes:
   estudy-data:

@@ -41,9 +41,10 @@ export default function Login() {
                 id: user.data.id,
                 auth: base64,
                 username: username,
+                emailAddress: user.data.emailAddress,
+                role: user.data.role,
                 isLoggedIn: true,
             }
-
             login(authenticatedUser);
             setErrorPresent(false);
             setModalType("Inactive");
