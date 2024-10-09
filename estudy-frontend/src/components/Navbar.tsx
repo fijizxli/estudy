@@ -111,6 +111,10 @@ export default function Navbar() {
                                 <Link to="/courses/create"><b>New course</b></Link>
                             </li>
                             <li className='m-auto'></li>
+                            <Avatar className="border-solid border-2 border-black">
+                                <AvatarImage src={avatarPath}/>
+                                <AvatarFallback><PersonIcon/></AvatarFallback>
+                            </Avatar>
                             <li className="m-2">
                                 <Link to="/profile">
                                     <Button className="h-9 w-9 p-0"><PersonIcon className="h-6 w-6"/></Button>
