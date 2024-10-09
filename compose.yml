@@ -98,7 +98,7 @@ services:
       - MINIO_ACCESS_KEY_ID=
       - MINIO_SECRET_ACCESS_KEYxp9HbJ0nhHjc7H1doP3RNxqC6w257UAC9tEYtgay
     volumes:
-      - ./data:/data/
+      - ./sqlite.db:/data/sqlite.db
     ports:
       - 8082:8082
 
