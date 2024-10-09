@@ -16,6 +16,7 @@ services:
       DB_USER: db_user
       DB_PASSWORD: password
       DATAGEN: 1
+      DATA_MIGRATION_SERVICE: "localhost:8081"
       ADMIN_USERNAME: admin
       ADMIN_PASSWORD: password
       API_KEY: key
@@ -62,8 +63,8 @@ services:
 
     command: --auth
     volumes:
-     - ./mongodata:/mongodata/db
-     - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - ./mongodata:/mongodata/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 
   minio:
     image: quay.io/minio/minio
@@ -78,13 +79,28 @@ services:
       timeout: 5s
       retries: 5
     environment:
-     - MINIO_ROOT_USER=root
-     - MINIO_ROOT_PASSWORD=example1
+      - MINIO_ROOT_USER=root
+      - MINIO_ROOT_PASSWORD=example1
     volumes:
-     - ./miniodata:/data
+      - ./miniodata:/data
     ports:
       - 9001:9001
       - 9000:9000
+
+  fileupload:
+    image: fileupload-api:latest
+    container_name: fileupload
+    networks:
+      - net
+    environment:
+      - MINIO_HOST=
+      - MINIO_PORT=
+      - MINIO_ACCESS_KEY_ID=
+      - MINIO_SECRET_ACCESS_KEYxp9HbJ0nhHjc7H1doP3RNxqC6w257UAC9tEYtgay
+    volumes:
+      - ./sqlite.db:/data/sqlite.db
+    ports:
+      - 8082:8082
 
 volumes:
   estudy-data:
