@@ -63,12 +63,8 @@ export default function MyCourses() {
                         <li>Role: {user.role}</li>
                     </ul>
                     </CardContent>
-                    {/* 
-                    <CardFooter>
-                        <Button className="w-80">Join</Button>
-                    </CardFooter>
-                    */}
                 </Card>
+
             </div>
             {(user.role==="LECTURER")?
             <div>
@@ -83,11 +79,6 @@ export default function MyCourses() {
                     <CardContent className=" h-full">
                     <p>{lecturerCourse.description}</p>
                     </CardContent>
-                    {/* 
-                    <CardFooter>
-                        <Button className="w-80">Join</Button>
-                    </CardFooter>
-                    */}
                 </Card>
                 ))}
             </div>
@@ -106,11 +97,6 @@ export default function MyCourses() {
                     <CardContent className=" h-full">
                     <p>{course.description}</p>
                     </CardContent>
-                    {/* 
-                    <CardFooter>
-                        <Button className="w-80">Join</Button>
-                    </CardFooter>
-                    */}
                 </Card>
                 ))}
             </div>
