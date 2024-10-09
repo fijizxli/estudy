@@ -16,6 +16,7 @@ services:
       DB_USER: db_user
       DB_PASSWORD: password
       DATAGEN: 1
+      DATA_MIGRATION_SERVICE: "localhost:8081"
       ADMIN_USERNAME: admin
       ADMIN_PASSWORD: password
       API_KEY: key
@@ -85,6 +86,21 @@ services:
     ports:
       - 9001:9001
       - 9000:9000
+
+  fileupload:
+    image: fileupload-api:latest
+    container_name: fileupload
+    networks:
+      - net
+    environment:
+      - MINIO_HOST=
+      - MINIO_PORT=
+      - MINIO_ACCESS_KEY_ID=
+      - MINIO_SECRET_ACCESS_KEYxp9HbJ0nhHjc7H1doP3RNxqC6w257UAC9tEYtgay
+    volumes:
+      - ./data:/data/
+    ports:
+      - 8082:8082
 
 volumes:
   estudy-data:
