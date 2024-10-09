@@ -11,6 +11,7 @@ import { fileupload } from "@/axios";
 
 export default function Register() {
     const [username, setUsername] = useState("");
+    const [emailAddress, setEmailAddress] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
@@ -101,6 +102,20 @@ export default function Register() {
                         id="username"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
+                        required
+                    />
+                    </div>
+                    <div className="grid w-full max-w-sm items-center gap-1.5">
+                    <Label htmlFor="emailAddress">
+                        <b>email address: </b>
+                    </Label>
+                    <Input
+                        className="w-100 pu-0 mb-2 mu-4 inline-block radius-10 box"
+                        type="text"
+                        placeholder="emailaddress@example.com"
+                        id="emailAddress"
+                        value={emailAddress}
+                        onChange={(e) => setEmailAddress(e.target.value)}
                         required
                     />
                     </div>
