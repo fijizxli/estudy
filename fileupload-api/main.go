@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"fmt"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -198,9 +199,10 @@ func main() {
 		c.Next()
 	})
 
-	endpoint := "localhost:9000"
-	accessKeyID := "1ZKMFFahuTs4p32JM21T"
-	secretAccessKey := "dMLofPRtK82HRYLF5D1EqOB5uY2nGDcu0bnQKE4G"
+	endpoint := os.Getenv("MINIO_ENDPOINT")
+	accessKeyID := os.Getenv("MINIO_ACCESS_KEY_ID")
+	secretAccessKey := os.Getenv("MINIO_SECRET_ACCESS_KEY")
+
 	useSSL := false
 
 	minioClient, err := minio.New(endpoint, &minio.Options{
