@@ -1,0 +1,23 @@
+FROM golang:1.23-alpine AS builder
+WORKDIR /app
+
+ARG MINIO_HOST
+ARG MINIO_PORT
+ARG MINIO_ACCESS_KEY_ID
+ARG MINIO_SECRET_ACCESS_KEY
+
+COPY . .
+RUN apk add gcc musl-dev
+RUN CC=gcc GOOS=linux GOARCH=amd64 CGO_ENABLED=1 go build -ldflags '-linkmode external -extldflags "-static"' -o fileupload .
+
+FROM alpine:latest
+WORKDIR /app
+COPY --from=builder /app/fileupload .
+
+ENV MINIO_HOST=MINIO_HOST
+ENV MINIO_PORT=MINIO_PORT
+ENV MINIO_ACCESS_KEY_ID=MINIO_ACCESS_KEY_ID
+ENV MINIO_SECRET_ACCESS_KEY=MINIO_SECRET_ACCESS_KEY
+
+EXPOSE 8082
+CMD ["/app/fileupload"]

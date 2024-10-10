@@ -88,7 +88,7 @@ services:
       - 9000:9000
 
   fileupload:
-    image: fileupload-api:latest
+    image: fileupload-api:static
     container_name: fileupload
     networks:
       - net
@@ -96,9 +96,9 @@ services:
       - MINIO_HOST=
       - MINIO_PORT=
       - MINIO_ACCESS_KEY_ID=
-      - MINIO_SECRET_ACCESS_KEYxp9HbJ0nhHjc7H1doP3RNxqC6w257UAC9tEYtgay
+      - MINIO_SECRET_ACCESS_KEY=
     volumes:
-      - ./sqlite.db:/data/sqlite.db
+      - ./sqlitedata:/app/data
     ports:
       - 8082:8082
 
