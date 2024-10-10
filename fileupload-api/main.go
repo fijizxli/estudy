@@ -185,8 +185,11 @@ func getUrls(db *sql.DB, minioClient *minio.Client, table string, bucketName str
 func main() {
 	r := gin.Default()
 
+	frontend_host := os.Getenv("FRONTEND_HOST")
+	frontend_port := os.Getenv("FRONTEND_PORT")
+
 	r.Use(func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "http://"+frontend_host":"+frontend_port)
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 

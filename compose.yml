@@ -93,6 +93,8 @@ services:
     networks:
       - net
     environment:
+- FRONTEND_HOST=localhost
+      - FRONTEND_PORT=3000
       - MINIO_HOST=
       - MINIO_PORT=
       - MINIO_ACCESS_KEY_ID=
