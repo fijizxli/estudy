@@ -233,7 +233,7 @@ func main() {
 
 	tables := []string{"course_cover", "user_avatar", "studymaterial_file"}
 
-	db, _ := sql.Open("sqlite3", "./sqlite.db")
+	db, _ := sql.Open("sqlite3", "./data/sqlite.db")
 	createTables(db, tables)
 	defer db.Close()
 
