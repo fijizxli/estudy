@@ -18,6 +18,4 @@ COPY --from=builder /proj/app .
 EXPOSE 5065
 RUN ls -Rahl .
 
-#ENTRYPOINT ["dotnet", "estudyRatings.dll"]
 CMD ["dotnet", "/app/publish/estudyRatings.dll"]
-#CMD ["sleep", "3600"]
