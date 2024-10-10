@@ -96,7 +96,8 @@ services:
       - MINIO_HOST=
       - MINIO_PORT=
       - MINIO_ACCESS_KEY_ID=
-      - MINIO_SECRET_ACCESS_KEY=
+      - MINIO_SECRET_ACCESS_KEY=xp9HbJ0nhHjc7H1doP3RNxqC6w257UAC9tEYtgay
+      - GIN_MODE=release
     volumes:
       - ./sqlitedata:/app/data
     ports:
