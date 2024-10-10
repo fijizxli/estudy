@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
@@ -14,8 +15,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
-
-const uri = "mongodb://root:example@localhost:27017/ratings?authSource=admin"
 
 type Rating struct {
 	ID                      primitive.ObjectID `json:"id" bson:"_id"`
@@ -90,6 +89,19 @@ func processLecturers(lecturers []Lecturer, lecturerCollection mongo.Collection,
 }
 
 func main() {
+	mongo_user := os.Getenv("MONGO_USER")
+	mongo_password := os.Getenv("MONGO_PASSWORD")
+	mongo_host := os.Getenv("MONGO_HOST")
+	mongo_port := os.Getenv("MONGO_PORT")
+	mongo_db := os.Getenv("MONGO_DB")
+	estudybackend_host := os.Getenv("BACKEND_HOST")
+	estudybackend_port := os.Getenv("BACKEND_PORT")
+	estudybackend_key := os.Getenv("BACKEND_KEY")
+	estudybackend_user := os.Getenv("BACKEND_USER")
+	estudybackend_password := os.Getenv("BACKEND_PASSWORD")
+
+	uri := "mongodb://"+mongo_user+":"+mongo_password+"@"+mongo_host+":"+mongo_port+"/"+mongo_db+"?authSource=admin"
+
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
 	opts := options.Client().ApplyURI(uri).SetServerAPIOptions(serverAPI)
 
@@ -117,9 +129,9 @@ func main() {
 	client := &http.Client{}
 
 	r.GET("/m/lecturers", func(c *gin.Context) {
-		req, err := http.NewRequest("", "http://localhost:8080/role/lecturer/more", nil)
-		req.Header.Add("X-API-KEY", "key")
-		req.SetBasicAuth("admin", "password")
+		req, err := http.NewRequest("", "http://"+estudybackend_host+":"+estudybackend_port+"/role/lecturer/more", nil)
+		req.Header.Add("X-API-KEY", estudybackend_key)
+		req.SetBasicAuth(estudybackend_user, estudybackend_password)
 
 		if err != nil {
 			panic(err)
@@ -150,9 +162,10 @@ func main() {
 	})
 
 	r.GET("/m/lecturer/:id", func(c *gin.Context) {
-		req, err := http.NewRequest("", "http://localhost:8080/lecturer/"+c.Param("id"), nil)
-		req.Header.Add("X-API-KEY", "key")
-		req.SetBasicAuth("admin", "password")
+		req, err := http.NewRequest("", 
+		"http://"+estudybackend_host+":"+estudybackend_port+"/lecturer/"+c.Param("id"), nil)
+		req.Header.Add("X-API-KEY", estudybackend_key)
+		req.SetBasicAuth(estudybackend_user, estudybackend_password)
 
 		if err != nil {
 			panic(err)
@@ -185,9 +198,10 @@ func main() {
 	})
 
 	r.GET("/u/lecturer/:id", func(c *gin.Context) {
-		req, err := http.NewRequest("", "http://localhost:8080/lecturer/"+c.Param("id"), nil)
-		req.Header.Add("X-API-KEY", "key")
-		req.SetBasicAuth("admin", "password")
+		req, err := http.NewRequest("",
+		"http://"+estudybackend_host+":"+estudybackend_port+"/lecturer/"+c.Param("id"), nil)
+		req.Header.Add("X-API-KEY", estudybackend_key)
+		req.SetBasicAuth(estudybackend_user, estudybackend_password)
 
 		if err != nil {
 			panic(err)
@@ -305,9 +319,10 @@ func main() {
 	})
 
 	r.GET("/u/courses/:id", func(c *gin.Context) {
-		req, err := http.NewRequest("", "http://localhost:8080/courses/"+c.Param("id")+"/less", nil)
-		req.Header.Add("X-API-KEY", "key")
-		req.SetBasicAuth("admin", "password")
+		req, err := http.NewRequest("",
+		"http://"+estudybackend_host+":"+estudybackend_port+"/courses/"+c.Param("id")+"/less", nil)
+		req.Header.Add("X-API-KEY", estudybackend_key)
+		req.SetBasicAuth(estudybackend_user, estudybackend_password)
 
 		if err != nil {
 			panic(err)

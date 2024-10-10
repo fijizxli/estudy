@@ -16,7 +16,7 @@ services:
       DB_USER: db_user
       DB_PASSWORD: password
       DATAGEN: 1
-      DATA_MIGRATION_SERVICE: "localhost:8081"
+      DATA_MIGRATION_SERVICE: "http://datasync:8081"
       ADMIN_USERNAME: admin
       ADMIN_PASSWORD: password
       API_KEY: key
@@ -104,6 +104,26 @@ services:
       - ./sqlitedata:/app/data
     ports:
       - 8082:8082
+
+  datasync:
+    image: datasync:latest
+    container_name: datasync
+    networks:
+      - net
+    environment:
+      - MONGO_USER=root
+      - MONGO_PASSWORD=example
+      - MONGO_HOST=mongo
+      - MONGO_PORT=27017
+      - MONGO_DB=ratings
+      - BACKEND_HOST=estudy-backend
+      - BACKEND_PORT=8080
+      - BACKEND_KEY=key
+      - BACKEND_USER=admin
+      - BACKEND_PASSWORD=password
+      - GIN_MODE=release
+    ports:
+      - 8081:8081
 
   ratings:
     image: ratings:latest
