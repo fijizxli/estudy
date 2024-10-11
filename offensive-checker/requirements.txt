@@ -1,0 +1,5 @@
+tokenizers
+transformers[cpu]
+fastapi[standard]
+fastapi
+uvicorn
