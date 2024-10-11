@@ -89,7 +89,7 @@ services:
       - 9000:9000
 
   fileupload:
-    image: fileupload-api:static
+    image: fileupload:latest
     container_name: fileupload
     networks:
       - net
@@ -137,7 +137,6 @@ services:
       - MONGO_HOST=mongo
       - MONGO_PORT=27017
       - MONGO_DB=ratings
-
     ports:
       - 5065:8080
 
