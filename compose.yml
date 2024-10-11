@@ -139,8 +139,7 @@ services:
       - MONGO_DB=ratings
 
     ports:
-      - 5065:5065
-
+      - 5065:8080
 
 volumes:
   estudy-data:
