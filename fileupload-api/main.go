@@ -187,6 +187,7 @@ func main() {
 
 	frontend_host := os.Getenv("FRONTEND_HOST")
 	frontend_port := os.Getenv("FRONTEND_PORT")
+	devEnvironment := true
 
 	r.Use(func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "http://"+frontend_host+":"+frontend_port)
@@ -208,12 +209,39 @@ func main() {
 
 	useSSL := false
 
-	minioClient, err := minio.New(host+":"+port, &minio.Options{
-		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
-		Secure: useSSL,
-	})
-	if err != nil {
-		log.Fatalln(err)
+	var minioClient *minio.Client
+	if !devEnvironment {
+		var err error
+		minioClient, err = minio.New(host+":"+port, &minio.Options{
+			Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
+			Secure: useSSL,
+		})
+		if err != nil {
+			panic(err)
+		}
+	} else {
+		proxyURL, err := url.Parse("http://" + host + ":" + port)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		transport := &http.Transport{
+			Proxy: http.ProxyURL(proxyURL),
+		}
+
+		httpClient := &http.Client{
+			Transport: transport,
+		}
+
+		minioClient, err = minio.New("localhost:"+port, &minio.Options{
+			Creds:     credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
+			Secure:    useSSL,
+			Transport: httpClient.Transport,
+		})
+
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	log.Printf("%#v\n", minioClient)
