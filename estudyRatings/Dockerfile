@@ -16,6 +16,5 @@ WORKDIR /app
 COPY --from=builder /proj/app .
 
 EXPOSE 5065
-RUN ls -Rahl .
 
 CMD ["dotnet", "/app/publish/estudyRatings.dll"]
