@@ -5,7 +5,7 @@ import {useAuth} from "../context";
 import {Card, CardHeader, CardContent, CardTitle, CardDescription } from "./ui/card";
 import { Label } from "./ui/label";
 import { Course } from '../types';
-import { Pencil2Icon, PersonIcon } from "@radix-ui/react-icons";
+import { Pencil2Icon, PersonIcon, TrashIcon } from "@radix-ui/react-icons";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
 import { Input } from "./ui/input";
@@ -38,7 +38,7 @@ export default function MyCourses() {
                             setLecturerCourses(response.data)
                         })
                     }
-            },[]) ;
+    },[]) ;
     if (user != null){
         fileupload.get("/avatar/"+user.id.toString()).then( response => {
             setAvatarPath(response.data.url[0]);
@@ -47,8 +47,34 @@ export default function MyCourses() {
     }
 
     const handleEdit = () => {
-        console.log("TODO: IMPLEMENTATION")
+        if (file != null){
+            const formData = new FormData();
+            formData.append('file', file);
+            if (avatarPath != ""){
+                fileupload.put("/avatar/"+user?.id.toString(), formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    }
+                })
+            } else {
+                fileupload.post("/upload/avatar/"+user?.id.toString(), formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    }
+                })
+            }
+        }
     };
+
+    const handleAvatarDelete = () => {
+        if (avatarPath != ""){
+            fileupload.delete("/avatar/"+user?.id.toString(), {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                }
+            })
+        }
+    }
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
@@ -75,14 +101,14 @@ export default function MyCourses() {
                                 <Pencil2Icon className="inline-block"/>
                             </CardTitle>
                         </DialogTrigger>
-                        <DialogContent>
+                        <DialogContent className="w-max">
                             <DialogHeader>
                                 <DialogTitle>Edit user details of <i>{user.username}</i></DialogTitle>
                                 <DialogDescription>
                                 </DialogDescription>
                             </DialogHeader>
-                            <form onSubmit={handleEdit}>
-                                <div className="grid w-full max-w-sm items-center gap-1.5">
+                            <form>
+                                <div className="grid max-w-sm items-center gap-1.5">
                                 <Label htmlFor="username">
                                     <b>username</b>
                                 </Label>
@@ -93,7 +119,6 @@ export default function MyCourses() {
                                     id="username"
                                     value={username}
                                     onChange={(e) => setUsername(e.target.value)}
-                                    required
                                 />
                                 </div>
                                 <div className="grid w-full max-w-sm items-center gap-1.5">
@@ -107,17 +132,19 @@ export default function MyCourses() {
                                     id="emailAddress"
                                     value={emailAddress}
                                     onChange={(e) => setEmailAddress(e.target.value)}
-                                    required
                                 />
                                 </div>
                                 <div className="grid max-w-sm items-center gap-1. 5w-100 pu-0 mb-2 mu-8 inline-block radius-10 box">
                                 <Label htmlFor="picture"><b>Profile picture</b></Label>
                                 <Input id="file" type="file" onChange={handleFileChange} />
                                 </div>
-                                <Button type="submit">
+                                <Button type="button" onClick={handleEdit}>
                                     Confirm
                                 </Button>
                         </form>
+                        <Button className="w-full" variant="destructive" onClick={handleAvatarDelete}>
+                            <TrashIcon className="mr-2 h-4 w-4"/>Delete avatar
+                        </Button>
                         </DialogContent>
                     </Dialog>
 
