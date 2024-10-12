@@ -61,4 +61,8 @@ public class UserDetailServiceImpl implements UserDetailsService {
         user.getCourses().remove(course);
         userRepository.save(user);
     }
+    
+    public void saveUser(User u){
+        userRepository.save(u);
+    }
 }
