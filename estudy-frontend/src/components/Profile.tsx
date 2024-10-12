@@ -12,7 +12,7 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 
 export default function MyCourses() {
-    const { user } = useAuth(); 
+    const { user, logout } = useAuth(); 
     const [courses, setCourses] = useState([]);
     const [lecturerCourses, setLecturerCourses] = useState([]);
     const [avatarPath, setAvatarPath] = useState<string>("");
@@ -21,32 +21,39 @@ export default function MyCourses() {
     const [file, setFile] = useState<File | null>(null);
 
     useEffect(()=> {
+        if (user?.username != undefined){
             axios.get('/' + user?.username + '/courses', {
                 headers: {
                     'Authorization': `Basic ${user?.auth}`,
                     'Content-Type': 'application/json',
-                }}).then(function (response) {
+                }
+            }).then(function (response) {
                     setCourses(response.data)
-                })
+            })
 
-                if (user?.role === "LECTURER"){
-                    axios.get('/courses/lecturer/' + user?.username, {
-                        headers: {
-                            'Authorization': `Basic ${user?.auth}`,
-                            'Content-Type': 'application/json',
-                        }}).then(function (response) {
-                            setLecturerCourses(response.data)
-                        })
+            if (user?.role === "LECTURER"){
+                axios.get('/courses/lecturer/' + user?.username, {
+                    headers: {
+                        'Authorization': `Basic ${user?.auth}`,
+                        'Content-Type': 'application/json',
                     }
-    },[]) ;
-    if (user != null){
-        fileupload.get("/avatar/"+user.id.toString()).then( response => {
-            setAvatarPath(response.data.url[0]);
+                }).then(function (response) {
+                        setLecturerCourses(response.data)
+                })
+            }
         }
-        );
-    }
+    },[]) ;
 
-    const handleEdit = () => {
+    useEffect(()=> {
+        if (user){
+            fileupload.get("/avatar/"+user.id.toString()).then( response => {
+                setAvatarPath(response.data.url[0]);
+            }
+            );
+        }
+    },[]) ;
+
+    const handleEdit = async () => {
         if (file != null){
             const formData = new FormData();
             formData.append('file', file);
@@ -62,6 +69,25 @@ export default function MyCourses() {
                         'Content-Type': 'multipart/form-data',
                     }
                 })
+            }
+        }
+        if (emailAddress !== "" || username !== ""){
+            let data = JSON.stringify({
+                username: username,
+                emailAddress: emailAddress,
+            });
+            const response = await axios.patch("/update/"+user?.username, data, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Basic ${user?.auth}`,
+                    Accept: "application/json",
+                    },
+                }
+            )
+            if (response.status === 200){
+                setUsername("");
+                setEmailAddress("");
+                logout();
             }
         }
     };
@@ -105,6 +131,7 @@ export default function MyCourses() {
                             <DialogHeader>
                                 <DialogTitle>Edit user details of <i>{user.username}</i></DialogTitle>
                                 <DialogDescription>
+                                    Changing your user details will require you to log back in.
                                 </DialogDescription>
                             </DialogHeader>
                             <form>
@@ -135,16 +162,23 @@ export default function MyCourses() {
                                 />
                                 </div>
                                 <div className="grid max-w-sm items-center gap-1. 5w-100 pu-0 mb-2 mu-8 inline-block radius-10 box">
-                                <Label htmlFor="picture"><b>Profile picture</b></Label>
+                                <Label htmlFor="picture"><b>avatar:</b></Label>
                                 <Input id="file" type="file" onChange={handleFileChange} />
                                 </div>
+
+                                { (avatarPath !== "") && (
+                                    <div className="grid max-w-sm items-center gap-1. 5w-100 pu-0 mb-2 mu-8 inline-block radius-10 box">
+                                        <Button type="button" className="w-full" variant="destructive" onClick={handleAvatarDelete}>
+                                            <TrashIcon className="mr-2 h-4 w-4"/>Delete avatar
+                                        </Button>
+                                    </div>
+                                )}
+
                                 <Button type="button" onClick={handleEdit}>
                                     Confirm
                                 </Button>
                         </form>
-                        <Button className="w-full" variant="destructive" onClick={handleAvatarDelete}>
-                            <TrashIcon className="mr-2 h-4 w-4"/>Delete avatar
-                        </Button>
+
                         </DialogContent>
                     </Dialog>
 
