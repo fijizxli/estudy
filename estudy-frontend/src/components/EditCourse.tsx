@@ -48,8 +48,6 @@ export default function EditCourse() {
         setDescription(response.data.description);
         setLecturer(response.data.lecturerName);
         setLecturers(lecturersResponse.data);
-
-
       };
 
       fetchData();
