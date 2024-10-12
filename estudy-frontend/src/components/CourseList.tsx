@@ -34,11 +34,6 @@ export default function CourseList() {
                     <CardContent className=" h-full">
                     <p>{course.description}</p>
                     </CardContent>
-                    {/* 
-                    <CardFooter>
-                        <Button className="w-80">Join</Button>
-                    </CardFooter>
-                    */}
                 </Card>
                 ))}
             </div>
