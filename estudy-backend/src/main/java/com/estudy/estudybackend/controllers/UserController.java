@@ -146,4 +146,23 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
         }
     }
+
+    @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_LECTURER') or hasRole('ROLE_ADMIN')")
+    @PatchMapping("/update/{username}")
+    public ResponseEntity<Void> updateUserDetails(@PathVariable String username, @RequestBody User user){
+        try {
+            User olduser = userService.findByUsername(username);
+            if (user.getUsername().toString() != ""){
+                olduser.setUsername(user.getUsername().toString());
+            }
+            if (user.getEmailAddress().toString() != ""){
+                olduser.setEmailAddress(user.getEmailAddress());
+            }
+            userService.saveUser(olduser);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
+        }
+    }
+
 }
