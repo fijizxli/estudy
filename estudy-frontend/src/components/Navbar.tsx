@@ -73,7 +73,7 @@ export default function Navbar() {
                             <li className="m-2 p-1 hover:border-solid hover:border-2 hover:border-black hover:rounded-md">
                                 <Link to="/courses"><b>Courses</b></Link>
                             </li>
-                            {(user?.role === "LECTURER") &&
+                            {(user?.role === "LECTURER" || user?.role === "ADMIN") &&
                             <li className="m-2 p-1 hover:border-solid hover:border-2 hover:border-black hover:rounded-md">
                                 <Link to="/courses/create"><b>New course</b></Link>
                             </li>
@@ -104,7 +104,7 @@ export default function Navbar() {
                             <li className="m-2 text-3xl ">
                                 <Link to="/courses"><CubeIcon className="h-8 w-8 hover:bg-black hover:text-white" /></Link>
                             </li>
-                            {(user?.role === "LECTURER") &&
+                            {(user?.role === "LECTURER" || user?.role === "ADMIN") &&
                                 <li className="m-2 p-1 hover:border-solid hover:border-2 hover:border-black hover:rounded-md">
                                     <Link to="/courses/create"><b>New course</b></Link>
                                 </li>
