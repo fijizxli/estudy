@@ -58,7 +58,6 @@ public class CourseController {
         CourseDto courseDto = new CourseDto(course.getId(), course.getTitle(), course.getDescription(), course.getLecturerName(), course.getStudyMaterials(), studentDtos);
 
         return new ResponseEntity<>(courseDto, HttpStatus.OK);
-
     }
 
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_LECTURER') or hasRole('ROLE_ADMIN')")
@@ -114,12 +113,12 @@ public class CourseController {
 
     @PreAuthorize("hasRole('ROLE_LECTURER') or hasRole('ROLE_ADMIN')")
     @PostMapping("/create")
-    public ResponseEntity<Void> createCourse(@RequestBody Course c){
+    public ResponseEntity<Long> createCourse(@RequestBody Course c){
         User lecturer = userService.findByUsername(c.getLecturerName());
         c = new Course(c.getTitle(), c.getDescription(), lecturer);
         cs.saveCourse(c);
-        migrationService.migrateLecturer(lecturer.getId()); // new course gets added when updating lecturers
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        migrationService.updateLecturer(lecturer.getId());
+        return new ResponseEntity<>(c.getId(),HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -133,6 +132,8 @@ public class CourseController {
     @PatchMapping("/{courseId}")
     public ResponseEntity<Void> patchCourse(@PathVariable Long courseId, @RequestBody Course course){
         Course existingCourse = cs.getCourseById(courseId);
+        Long oldId = existingCourse.getLecturer().getId();
+        Long newId;
 
         if (course.getTitle() != null){
             existingCourse.setTitle(course.getTitle());
@@ -143,13 +144,18 @@ public class CourseController {
 
         if (course.getLecturerName() != null){
             User user = userService.findByUsername(course.getLecturerName());
+            newId = user.getId();
             if (user.getRole().equals(existingCourse.getLecturer().getRole())){
                 existingCourse.setLecturer(user);
+            }
+            if (oldId != newId){
+                migrationService.updateLecturer(oldId);
+                migrationService.updateLecturer(newId);
             }
         }
         cs.saveCourse(existingCourse);
         migrationService.updateCourse(courseId);
-        migrationService.updateLecturer(existingCourse.getId());
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
