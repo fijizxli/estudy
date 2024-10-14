@@ -5,9 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
-	"strconv"
 	"os"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
@@ -60,9 +61,10 @@ func processCourses(courses []Course, lecturerID int, courseCollection mongo.Col
 		course.Lecturer = lecturerID
 		res, err := courseCollection.InsertOne(context.TODO(), course)
 		if err != nil {
-			panic(err)
+			log.Println(err)
+		} else {
+			log.Printf("Inserted document with _id: %v\n", res.InsertedID)
 		}
-		fmt.Printf("Inserted document with _id: %v\n", res.InsertedID)
 	}
 	return courseIDs
 }
@@ -82,9 +84,10 @@ func processLecturers(lecturers []Lecturer, lecturerCollection mongo.Collection,
 		lecturerProcessed = processLecturer(lecturer, courseCollection)
 		res, err := lecturerCollection.InsertOne(context.TODO(), lecturerProcessed)
 		if err != nil {
-			panic(err)
+			log.Println(err)
+		} else {
+			log.Printf("Inserted document with _id: %v\n", res.InsertedID)
 		}
-		fmt.Printf("Inserted document with _id: %v\n", res.InsertedID)
 	}
 }
 
@@ -100,7 +103,7 @@ func main() {
 	estudybackend_user := os.Getenv("BACKEND_USER")
 	estudybackend_password := os.Getenv("BACKEND_PASSWORD")
 
-	uri := "mongodb://"+mongo_user+":"+mongo_password+"@"+mongo_host+":"+mongo_port+"/"+mongo_db+"?authSource=admin"
+	uri := "mongodb://" + mongo_user + ":" + mongo_password + "@" + mongo_host + ":" + mongo_port + "/" + mongo_db + "?authSource=admin"
 
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
 	opts := options.Client().ApplyURI(uri).SetServerAPIOptions(serverAPI)
@@ -162,8 +165,7 @@ func main() {
 	})
 
 	r.GET("/m/lecturer/:id", func(c *gin.Context) {
-		req, err := http.NewRequest("", 
-		"http://"+estudybackend_host+":"+estudybackend_port+"/lecturer/"+c.Param("id"), nil)
+		req, err := http.NewRequest("", "http://"+estudybackend_host+":"+estudybackend_port+"/lecturer/"+c.Param("id"), nil)
 		req.Header.Add("X-API-KEY", estudybackend_key)
 		req.SetBasicAuth(estudybackend_user, estudybackend_password)
 
@@ -183,14 +185,17 @@ func main() {
 			panic(err)
 		}
 
-		var lecturer []Lecturer
+		var lecturer Lecturer
+		var lecturers []Lecturer
 
 		err = json.Unmarshal(body, &lecturer)
 		if err != nil {
 			panic(err)
 		}
 
-		processLecturers(lecturer, *lecturerCollection, *courseCollection)
+		lecturers = append(lecturers, lecturer)
+
+		processLecturers(lecturers, *lecturerCollection, *courseCollection)
 
 		c.JSON(200, gin.H{
 			"message": "pong",
@@ -199,7 +204,7 @@ func main() {
 
 	r.GET("/u/lecturer/:id", func(c *gin.Context) {
 		req, err := http.NewRequest("",
-		"http://"+estudybackend_host+":"+estudybackend_port+"/lecturer/"+c.Param("id"), nil)
+			"http://"+estudybackend_host+":"+estudybackend_port+"/lecturer/"+c.Param("id"), nil)
 		req.Header.Add("X-API-KEY", estudybackend_key)
 		req.SetBasicAuth(estudybackend_user, estudybackend_password)
 
@@ -320,7 +325,7 @@ func main() {
 
 	r.GET("/u/courses/:id", func(c *gin.Context) {
 		req, err := http.NewRequest("",
-		"http://"+estudybackend_host+":"+estudybackend_port+"/courses/"+c.Param("id")+"/less", nil)
+			"http://"+estudybackend_host+":"+estudybackend_port+"/courses/"+c.Param("id")+"/less", nil)
 		req.Header.Add("X-API-KEY", estudybackend_key)
 		req.SetBasicAuth(estudybackend_user, estudybackend_password)
 
