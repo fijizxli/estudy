@@ -15,6 +15,6 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine
 WORKDIR /app
 COPY --from=builder /proj/app .
 
-EXPOSE 5065
+EXPOSE 8080
 
 CMD ["dotnet", "/app/publish/estudyRatings.dll"]
