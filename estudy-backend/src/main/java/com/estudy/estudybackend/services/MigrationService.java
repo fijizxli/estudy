@@ -35,7 +35,7 @@ public class MigrationService {
         }
     }
 
-    public void migrateLecturer(Long id) { // new course gets added when updating lecturers
+    public void migrateLecturer(Long id) {
         if (dataMigrationService != null){
             webClient.get()
                 .uri("/m/lecturer/"+id.toString())
@@ -45,7 +45,7 @@ public class MigrationService {
         }
     }
 
-    public void updateLecturer(Long id) { // not yet used, user details cant be modified currently
+    public void updateLecturer(Long id) {
         if (dataMigrationService != null){
             webClient.get()
                 .uri("/u/lecturer/"+id.toString())
