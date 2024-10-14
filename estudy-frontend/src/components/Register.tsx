@@ -45,7 +45,6 @@ export default function Register() {
                     },
                 }
             );
-            console.log(file, response.status);
 
             if (file != null && response.status === 201){
                 const formData = new FormData();
@@ -64,7 +63,6 @@ export default function Register() {
                         'Content-Type': 'multipart/form-data',
                     }, 
                 })
-                console.log(response);
             }
 
             setErrorPresent(false);
