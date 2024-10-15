@@ -144,7 +144,9 @@
             rating.LecturerId = _Lecturer.Id;
             rating.DateAdded = DateTime.Now;
             var newRating = await RatingService.InsertRating(rating);
-            await LecturerService.AddRatingToLecturer(_Lecturer.Id, newRating.Id);
+            if (newRating != null){
+                await LecturerService.AddRatingToLecturer(_Lecturer.Id, newRating.Id);
+            }
         }
         rating = new Rating();
     }
