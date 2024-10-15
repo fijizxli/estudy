@@ -106,7 +106,7 @@ h1 {
 }
 
 .ratingform {
-    display: gri;
+    display: grid;
     width: 160px;
     padding: auto;
 }
@@ -121,4 +121,26 @@ h1 {
 
 .column {
     flex: 50%;
+}
+
+h4 > a {
+    font-weight: bold;
+    text-decoration: none;
+    color: black;
+}
+
+h4 > a:visited {
+    font-weight: bold;
+    text-decoration: none;
+    color: black;
+}
+
+h4 > a:hover {
+    font-weight: bold;
+    text-decoration: none;
+    color: black;
+}
+
+h4 > a > li {
+    list-style-type: none;
 }
