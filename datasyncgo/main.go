@@ -59,6 +59,9 @@ func processCourses(courses []Course, lecturerID int, courseCollection mongo.Col
 	for _, course := range courses {
 		courseIDs = append(courseIDs, course.ID)
 		course.Lecturer = lecturerID
+		if course.Ratings == nil {
+			course.Ratings = []primitive.ObjectID{}
+		}
 		res, err := courseCollection.InsertOne(context.TODO(), course)
 		if err != nil {
 			log.Println(err)
