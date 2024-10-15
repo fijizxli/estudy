@@ -26,6 +26,7 @@ builder.Services.AddSingleton<LecturerService>();
 builder.Services.AddSingleton<CourseService>();
 builder.Services.AddSingleton<RatingService>();
 builder.Services.AddSingleton<CourseRatingService>();
+builder.Configuration.AddEnvironmentVariables();
 
 var app = builder.Build();
 
