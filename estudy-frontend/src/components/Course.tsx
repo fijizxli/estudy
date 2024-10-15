@@ -4,7 +4,7 @@ import { Link, useParams, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from "../context";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
-import { Cross2Icon, Pencil1Icon, PlusIcon, TrashIcon, FilePlusIcon } from "@radix-ui/react-icons";
+import { Cross2Icon, Pencil1Icon, PlusIcon, TrashIcon, FilePlusIcon, PersonIcon } from "@radix-ui/react-icons";
 import { Course as CourseType } from "../types";
 import { StudyMaterial as StudyMaterialType } from "../types";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -15,7 +15,6 @@ export default function Course() {
     const [coverPath, setCoverPath] = useState<string>("");
     const [course, setCourse] = useState<CourseType>();
     const [isEnrolled, setIsEnrolled] = useState(false);
-    const [loadingCover, setLoadingCover] = useState<boolean>(true);
 
     const isPhone: boolean = useMediaQuery({maxWidth: 768});
     const nav = useNavigate();
@@ -33,16 +32,14 @@ export default function Course() {
         })
     }, []);
 
-    useEffect(()=> {
+    useEffect( ()=> {
         if (course && course.id){
             fileupload.get("/cover/"+course.id.toString()).then( response => {
                 setCoverPath(response.data.url[0]);
             }
             );
         }
-        setLoadingCover(false);
-    }, []);
- 
+    })
 
     const deleteCourse = () => {
         axios.delete('/courses/' + courseId, {
@@ -94,12 +91,11 @@ export default function Course() {
         });
     };
 
-    if (!loadingCover){
     return user?.isLoggedIn ?(
             <div className="w-10/12 m-auto">
             <div className="pt-10">
                 <div className="flex flex-col items-center space-y-4 md:flex-row md:space-y-0 md:space-x-6 p-4 rounded-lg pt-20">
-                    <img onLoad={() => setLoadingCover(true)} loading="eager" src={coverPath} className="w-full max-w-xs h-auto rounded-lg shadow-lg"/>
+                    <img loading="eager" src={coverPath} className="w-full max-w-xs h-auto rounded-lg shadow-lg"/>
                 <div>
                     <Label className="text-xl flex m-auto pt-20 pb-4"><b>{course?.title}</b></Label>
                     <Label className="text-md flex pb-4">{course?.description}</Label>
@@ -229,5 +225,4 @@ export default function Course() {
 
         </div>
     ) : <Navigate replace to="/"/>
-}
 }
