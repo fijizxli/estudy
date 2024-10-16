@@ -79,7 +79,11 @@ export default function AddCourse() {
                 })
                 if (uploadresponse.status === 200){
                     alert("Course added.");
+                } else {
+                    alert("Course added, file upload did not succeed.");
                 }
+            } else {
+                alert("Course added.");
             }
         } catch (error) {
             alert(error);
