@@ -37,7 +37,7 @@ public class StudyMaterialController {
 
     @PreAuthorize("hasRole('ROLE_LECTURER') or hasRole('ROLE_ADMIN')")
     @PostMapping("/create")
-    public ResponseEntity<Course> createStudyMaterial(@PathVariable Long courseId, @RequestBody StudyMaterial studyMaterial){
+    public ResponseEntity<Long> createStudyMaterial(@PathVariable Long courseId, @RequestBody StudyMaterial studyMaterial){
         try {
             Course course = courseService.getCourseById(courseId);
             if (course == null){
@@ -45,7 +45,7 @@ public class StudyMaterialController {
             }
             studyMaterialService.addStudyMaterialToCourse(studyMaterial, courseId);
 
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>(studyMaterial.getId(), HttpStatus.CREATED);
 
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

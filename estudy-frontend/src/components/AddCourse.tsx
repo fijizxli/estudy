@@ -1,4 +1,4 @@
-import axios from "../axios";
+import axios, { fileupload } from "../axios";
 import {useState, useEffect} from 'react'
 import {Navigate} from "react-router-dom";
 import {useAuth} from "../context";
@@ -8,11 +8,11 @@ import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
 
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
 import { User } from "@/types";
 
@@ -23,6 +23,7 @@ export default function AddCourse() {
     const [description, setDescription] = useState([]);
     const [lecturer, setLecturer] = useState("");
     const [lecturers, setLecturers] = useState([]);
+    const [file, setFile] = useState<File | null>(null);
 
     useEffect(() => {
         if (isLoading) {
@@ -44,6 +45,11 @@ export default function AddCourse() {
     }
     }, []);
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            setFile(e.target.files[0]);
+        }
+    };
 
     const handleSubmit = async (e: any) => {
         let data = JSON.stringify(
@@ -55,14 +61,30 @@ export default function AddCourse() {
         )
         e.preventDefault();
         try {
-            await axios.post(
+            const response = await axios.post(
                 "/courses/create",
                 data,
                 {
                     headers: {"Content-Type": "application/json", 'Authorization': `Basic ${user?.auth}`, "Accept":"application/json"},
                 }
             );
-            alert("Course added.");
+            if (file != null && response.status==201){
+                const formData = new FormData();
+                const courseId = response.data
+                formData.append('file', file);
+                const uploadresponse = await fileupload.post("/upload/cover/"+courseId.toString(), formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    }
+                })
+                if (uploadresponse.status === 200){
+                    alert("Course added.");
+                } else {
+                    alert("Course added, file upload did not succeed.");
+                }
+            } else {
+                alert("Course added.");
+            }
         } catch (error) {
             alert(error);
         }
@@ -91,7 +113,6 @@ export default function AddCourse() {
                     <Label htmlFor="lecturer">Lecturer</Label><br/>
                     {user?.role === "ADMIN" ? 
                     <div>
-                    <br />
                     <Select value={lecturer} onValueChange={(value) => setLecturer(value)}>
                         <SelectTrigger className="w-[180px]">
                             <SelectValue placeholder={lecturer}/>
@@ -125,7 +146,10 @@ export default function AddCourse() {
                         value={description}
                         required
                     ></Textarea><br/>
-
+                    <div className="grid max-w-sm items-center gap-1. 5w-100 pu-0 mb-2 mu-8 inline-block radius-10 box">
+                        <Label htmlFor="picture">Cover</Label>
+                        <Input id="file" type="file" onChange={handleFileChange} />
+                    </div>
                     <Button className="" type="submit">
                         Add
                     </Button>

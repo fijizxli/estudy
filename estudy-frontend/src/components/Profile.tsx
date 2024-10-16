@@ -5,14 +5,14 @@ import {useAuth} from "../context";
 import {Card, CardHeader, CardContent, CardTitle, CardDescription } from "./ui/card";
 import { Label } from "./ui/label";
 import { Course } from '../types';
-import { Pencil2Icon, PersonIcon } from "@radix-ui/react-icons";
+import { Pencil2Icon, PersonIcon, TrashIcon } from "@radix-ui/react-icons";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 
 export default function MyCourses() {
-    const { user } = useAuth(); 
+    const { user, logout } = useAuth(); 
     const [courses, setCourses] = useState([]);
     const [lecturerCourses, setLecturerCourses] = useState([]);
     const [avatarPath, setAvatarPath] = useState<string>("");
@@ -21,34 +21,86 @@ export default function MyCourses() {
     const [file, setFile] = useState<File | null>(null);
 
     useEffect(()=> {
+        if (user?.username != undefined){
             axios.get('/' + user?.username + '/courses', {
                 headers: {
                     'Authorization': `Basic ${user?.auth}`,
                     'Content-Type': 'application/json',
-                }}).then(function (response) {
+                }
+            }).then(function (response) {
                     setCourses(response.data)
-                })
+            })
 
-                if (user?.role === "LECTURER"){
-                    axios.get('/courses/lecturer/' + user?.username, {
-                        headers: {
-                            'Authorization': `Basic ${user?.auth}`,
-                            'Content-Type': 'application/json',
-                        }}).then(function (response) {
-                            setLecturerCourses(response.data)
-                        })
+            if (user?.role === "LECTURER"){
+                axios.get('/courses/lecturer/' + user?.username, {
+                    headers: {
+                        'Authorization': `Basic ${user?.auth}`,
+                        'Content-Type': 'application/json',
                     }
-            },[]) ;
-    if (user != null){
-        fileupload.get("/avatar/"+user.id.toString()).then( response => {
-            setAvatarPath(response.data.url[0]);
+                }).then(function (response) {
+                        setLecturerCourses(response.data)
+                })
+            }
         }
-        );
-    }
+    },[]) ;
 
-    const handleEdit = () => {
-        console.log("TODO: IMPLEMENTATION")
+    useEffect(()=> {
+        if (user){
+            fileupload.get("/avatar/"+user.id.toString()).then( response => {
+                setAvatarPath(response.data.url[0]);
+            }
+            );
+        }
+    },[]) ;
+
+    const handleEdit = async () => {
+        if (file != null){
+            const formData = new FormData();
+            formData.append('file', file);
+            if (avatarPath != ""){
+                fileupload.put("/avatar/"+user?.id.toString(), formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    }
+                })
+            } else {
+                fileupload.post("/upload/avatar/"+user?.id.toString(), formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    }
+                })
+            }
+        }
+        if (emailAddress !== "" || username !== ""){
+            let data = JSON.stringify({
+                username: username,
+                emailAddress: emailAddress,
+            });
+            const response = await axios.patch("/update/"+user?.username, data, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Basic ${user?.auth}`,
+                    Accept: "application/json",
+                    },
+                }
+            )
+            if (response.status === 200){
+                setUsername("");
+                setEmailAddress("");
+                logout();
+            }
+        }
     };
+
+    const handleAvatarDelete = () => {
+        if (avatarPath != ""){
+            fileupload.delete("/avatar/"+user?.id.toString(), {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                }
+            })
+        }
+    }
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
@@ -75,14 +127,15 @@ export default function MyCourses() {
                                 <Pencil2Icon className="inline-block"/>
                             </CardTitle>
                         </DialogTrigger>
-                        <DialogContent>
+                        <DialogContent className="w-max">
                             <DialogHeader>
                                 <DialogTitle>Edit user details of <i>{user.username}</i></DialogTitle>
                                 <DialogDescription>
+                                    Changing your user details will require you to log back in.
                                 </DialogDescription>
                             </DialogHeader>
-                            <form onSubmit={handleEdit}>
-                                <div className="grid w-full max-w-sm items-center gap-1.5">
+                            <form>
+                                <div className="grid max-w-sm items-center gap-1.5">
                                 <Label htmlFor="username">
                                     <b>username</b>
                                 </Label>
@@ -93,7 +146,6 @@ export default function MyCourses() {
                                     id="username"
                                     value={username}
                                     onChange={(e) => setUsername(e.target.value)}
-                                    required
                                 />
                                 </div>
                                 <div className="grid w-full max-w-sm items-center gap-1.5">
@@ -107,17 +159,26 @@ export default function MyCourses() {
                                     id="emailAddress"
                                     value={emailAddress}
                                     onChange={(e) => setEmailAddress(e.target.value)}
-                                    required
                                 />
                                 </div>
                                 <div className="grid max-w-sm items-center gap-1. 5w-100 pu-0 mb-2 mu-8 inline-block radius-10 box">
-                                <Label htmlFor="picture"><b>Profile picture</b></Label>
+                                <Label htmlFor="picture"><b>avatar:</b></Label>
                                 <Input id="file" type="file" onChange={handleFileChange} />
                                 </div>
-                                <Button type="submit">
+
+                                { (avatarPath !== "") && (
+                                    <div className="grid max-w-sm items-center gap-1. 5w-100 pu-0 mb-2 mu-8 inline-block radius-10 box">
+                                        <Button type="button" className="w-full" variant="destructive" onClick={handleAvatarDelete}>
+                                            <TrashIcon className="mr-2 h-4 w-4"/>Delete avatar
+                                        </Button>
+                                    </div>
+                                )}
+
+                                <Button type="button" onClick={handleEdit}>
                                     Confirm
                                 </Button>
                         </form>
+
                         </DialogContent>
                     </Dialog>
 

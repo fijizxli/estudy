@@ -4,34 +4,40 @@ using MongoDB.Driver;
 
 public class RatingService {
     private readonly IMongoCollection<Rating> _ratingCollection;
+    private readonly string OFFENSIVE_CHECKER_SERVICE = "";
 
-    public RatingService(IMongoClient mongoClient){
+    public RatingService(IMongoClient mongoClient, IConfiguration configuration){
         var database = mongoClient.GetDatabase("ratings");
         _ratingCollection = database.GetCollection<Rating>("ratings");
+        OFFENSIVE_CHECKER_SERVICE += configuration["OFFCHECK_HOST"]+":"+configuration["OFFCHECK_PORT"];
     }
 
     public async Task<Rating?> InsertRating(Rating rating)
     {
-        if (rating.Comment != null){
-            HttpClient client = new HttpClient();
-            try
-            {
-                using HttpResponseMessage response = await client.GetAsync("http://localhost:8000/check?s="+rating.Comment.ToString());
-                response.EnsureSuccessStatusCode();
-                string responseBody = await response.Content.ReadAsStringAsync();
+        if (!string.IsNullOrEmpty(OFFENSIVE_CHECKER_SERVICE)){
+            if (rating.Comment != null){
+                HttpClient client = new HttpClient();
+                try
+                {
+                    using HttpResponseMessage response = await client.GetAsync("http://"+OFFENSIVE_CHECKER_SERVICE+"/check?s="+rating.Comment.ToString());
+                    response.EnsureSuccessStatusCode();
+                    string responseBody = await response.Content.ReadAsStringAsync();
 
-                JsonNode offensiveNode = JsonNode.Parse(responseBody)!;
+                    JsonNode offensiveNode = JsonNode.Parse(responseBody)!;
 
 
-                bool offensive = (bool)offensiveNode["offensive"];
+                    bool offensive = (bool)offensiveNode["offensive"];
 
-                await _ratingCollection.InsertOneAsync(rating);
-                return rating;
-            }
-            catch (HttpRequestException e)
-            {
-                Console.WriteLine("\nException Caught!");
-                Console.WriteLine("Message :{0} ", e.Message);
+                    if (!offensive){
+                        await _ratingCollection.InsertOneAsync(rating);
+                    }
+                    return rating;
+                }
+                catch (HttpRequestException e)
+                {
+                    Console.WriteLine("\nException Caught!");
+                    Console.WriteLine("Message :{0} ", e.Message);
+                }
             }
         }
         return null;

@@ -25,7 +25,7 @@ import java.util.List;
 public class CourseController {
 
     @Autowired
-    private CourseService cs;
+    private CourseService courseService;
 
     @Autowired
     private MigrationService migrationService;
@@ -36,21 +36,21 @@ public class CourseController {
     @Autowired
     private UserDetailServiceImpl userService;
 
-    public CourseController(CourseService cs) {
-        this.cs = cs;
+    public CourseController(CourseService courseService) {
+        this.courseService = courseService;
     }
 
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_LECTURER') or hasRole('ROLE_ADMIN')")
     @GetMapping("")
     public ResponseEntity<List<CourseDto>> getCourses(){
-        List<CourseDto> courses = cs.getCourses();
+        List<CourseDto> courses = courseService.getCourses();
         return new ResponseEntity<>(courses, HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_LECTURER') or hasRole('ROLE_ADMIN')")
     @GetMapping("/{courseId}")
     public ResponseEntity<CourseDto> getCourseById(@PathVariable Long courseId){
-        Course course = cs.getCourseById(courseId);
+        Course course = courseService.getCourseById(courseId);
         List<StudentDto> studentDtos = new ArrayList<>();
         for (User user: course.getStudents()){
             studentDtos.add(new StudentDto(user.getId(), user.getUsername(), user.getEmailAddress()));
@@ -58,13 +58,12 @@ public class CourseController {
         CourseDto courseDto = new CourseDto(course.getId(), course.getTitle(), course.getDescription(), course.getLecturerName(), course.getStudyMaterials(), studentDtos);
 
         return new ResponseEntity<>(courseDto, HttpStatus.OK);
-
     }
 
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_LECTURER') or hasRole('ROLE_ADMIN')")
     @GetMapping("/{courseId}/less")
     public ResponseEntity<CourseDtoMin> getCourseMinById(@PathVariable Long courseId){
-        Course course = cs.getCourseById(courseId);
+        Course course = courseService.getCourseById(courseId);
 
         CourseDtoMin courseDtoMin = new CourseDtoMin(course.getId(), course.getTitle(), course.getDescription(), course.getLecturerName());
 
@@ -76,7 +75,7 @@ public class CourseController {
     @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_LECTURER') or hasRole('ROLE_ADMIN')")
     @GetMapping("/{courseId}/lecturer")
     public ResponseEntity<String> getLecturerOfCourse(@PathVariable Long courseId){
-        Course course = cs.getCourseById(courseId);
+        Course course = courseService.getCourseById(courseId);
         if (course != null){
             return new ResponseEntity<>(course.getLecturerName(), HttpStatus.OK);
         } else {
@@ -91,7 +90,7 @@ public class CourseController {
         if (lecturer != null){
             Role lecturerRole = roleRepository.findByName("LECTURER");
             if (lecturer.getRole().equals(lecturerRole)){
-                List<Course> courses = cs.getCoursesByLecturer(lecturer);
+                List<Course> courses = courseService.getCoursesByLecturer(lecturer);
                 List<CourseDto> courseDtos = new ArrayList<>();
                 for (Course course: courses){
                     List<StudentDto> studentDtos = new ArrayList<>();
@@ -114,25 +113,27 @@ public class CourseController {
 
     @PreAuthorize("hasRole('ROLE_LECTURER') or hasRole('ROLE_ADMIN')")
     @PostMapping("/create")
-    public ResponseEntity<Void> createCourse(@RequestBody Course c){
+    public ResponseEntity<Long> createCourse(@RequestBody Course c){
         User lecturer = userService.findByUsername(c.getLecturerName());
         c = new Course(c.getTitle(), c.getDescription(), lecturer);
-        cs.saveCourse(c);
-        migrationService.migrateLecturer(lecturer.getId()); // new course gets added when updating lecturers
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        courseService.saveCourse(c);
+        migrationService.updateLecturer(lecturer.getId());
+        return new ResponseEntity<>(c.getId(),HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{courseId}")
     public ResponseEntity<Void> deleteCourseById(@PathVariable Long courseId){
-        cs.deleteCourse(courseId);
+        courseService.deleteCourse(courseId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PreAuthorize("hasRole('ROLE_LECTURER') or hasRole('ROLE_ADMIN')")
     @PatchMapping("/{courseId}")
     public ResponseEntity<Void> patchCourse(@PathVariable Long courseId, @RequestBody Course course){
-        Course existingCourse = cs.getCourseById(courseId);
+        Course existingCourse = courseService.getCourseById(courseId);
+        Long oldId = existingCourse.getLecturer().getId();
+        Long newId;
 
         if (course.getTitle() != null){
             existingCourse.setTitle(course.getTitle());
@@ -143,13 +144,18 @@ public class CourseController {
 
         if (course.getLecturerName() != null){
             User user = userService.findByUsername(course.getLecturerName());
+            newId = user.getId();
             if (user.getRole().equals(existingCourse.getLecturer().getRole())){
                 existingCourse.setLecturer(user);
             }
+            if (oldId != newId){
+                migrationService.updateLecturer(oldId);
+                migrationService.updateLecturer(newId);
+            }
         }
-        cs.saveCourse(existingCourse);
+        courseService.saveCourse(existingCourse);
         migrationService.updateCourse(courseId);
-        migrationService.updateLecturer(existingCourse.getId());
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

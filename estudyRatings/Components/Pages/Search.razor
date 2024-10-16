@@ -57,17 +57,20 @@
     private List<Course> _courses = new List<Course>();
     private async Task SearchDb()
     {
-        if (!string.IsNullOrEmpty(_searchTerm))
-        {
-            if (_field == "lecturer") {
+        _lecturers.Clear();
+        _courses.Clear();
+        if (_field == "lecturer") {
+            if (!string.IsNullOrEmpty(_searchTerm)){
                 _lecturers = await LecturerService.GetLecturersByUsername(_searchTerm);
-            } else if (_field == "course"){
-                _courses = await CourseService.GetCourseByTitle(_searchTerm);
+            } else {
+                _lecturers = await LecturerService.GetLecturers(); 
             }
-        } else {
-            _lecturers.Clear();
-            _courses.Clear();
-
+        } else if (_field == "course"){
+            if (!string.IsNullOrEmpty(_searchTerm)){
+                _courses = await CourseService.GetCourseByTitle(_searchTerm);
+            } else {
+                _courses = await CourseService.GetCourses();
+            }
         }
     }
 }

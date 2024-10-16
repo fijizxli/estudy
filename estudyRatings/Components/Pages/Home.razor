@@ -16,7 +16,7 @@
     @if (Ratings != null){
         <div class="column">
             @for (int i = 0; i < Lecturers.Count; i++){
-                <h4>@LecturerList[i].Username</h4>
+                <h4><a href="lecturer/@LecturerList[i].Id"><li>@LecturerList[i].Username</li></a></h4>
                 @for (int j = 0; j < Ratings.Count; j++){
                     <div class="commentcontainer">
                     @if (LecturerList[i].Id == Ratings[j].LecturerId){
@@ -33,7 +33,7 @@
     @if (CourseRatings != null){
         <div class="column">
             @for (int i = 0; i < Courses.Count; i++){
-                <h4>@CourseList[i].Title</h4>
+                <h4><a href="course/@CourseList[i].Id"><li>@CourseList[i].Title</li></a></h4>
                 @for (int j = 0; j < CourseRatings.Count; j++){
                     <div class="commentcontainer">
                     @if (CourseList[i].Id == CourseRatings[j].CourseId){

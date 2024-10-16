@@ -60,7 +60,7 @@
                 <div class="commentcontainer">
                 @if (@r.Comment != null){
                     <div class="comment">
-                        <h6>@r.DateAdded</h6>
+                        <h5>@r.DateAdded</h5>
                         <p>@r.Comment</p>
                     </div>
                     <br>
@@ -125,13 +125,14 @@
         AvgGradingScore = Avg(GradingScores);
     }
 
-
     private async Task Submit(){
         if (rating != null){
             rating.CourseId= _Course.Id;
             rating.DateAdded = DateTime.Now;
             var newRating = await CourseRatingService.InsertRating(rating);
-            await CourseService.AddRatingToCourse(_Course.Id, newRating.Id);
+            if (newRating != null){
+                await CourseService.AddRatingToCourse(_Course.Id, newRating.Id);
+            }
         }
         rating = new CourseRating();
     }

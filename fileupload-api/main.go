@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"fmt"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -186,8 +185,12 @@ func getUrls(db *sql.DB, minioClient *minio.Client, table string, bucketName str
 func main() {
 	r := gin.Default()
 
+	frontend_host := os.Getenv("FRONTEND_HOST")
+	frontend_port := os.Getenv("FRONTEND_PORT")
+	devEnvironment := true
+
 	r.Use(func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "http://"+frontend_host+":"+frontend_port)
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
@@ -199,18 +202,46 @@ func main() {
 		c.Next()
 	})
 
-	endpoint := os.Getenv("MINIO_ENDPOINT")
+	host := os.Getenv("MINIO_HOST")
+	port := os.Getenv("MINIO_PORT")
 	accessKeyID := os.Getenv("MINIO_ACCESS_KEY_ID")
 	secretAccessKey := os.Getenv("MINIO_SECRET_ACCESS_KEY")
 
 	useSSL := false
 
-	minioClient, err := minio.New(endpoint, &minio.Options{
-		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
-		Secure: useSSL,
-	})
-	if err != nil {
-		log.Fatalln(err)
+	var minioClient *minio.Client
+	if !devEnvironment {
+		var err error
+		minioClient, err = minio.New(host+":"+port, &minio.Options{
+			Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
+			Secure: useSSL,
+		})
+		if err != nil {
+			panic(err)
+		}
+	} else {
+		proxyURL, err := url.Parse("http://" + host + ":" + port)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		transport := &http.Transport{
+			Proxy: http.ProxyURL(proxyURL),
+		}
+
+		httpClient := &http.Client{
+			Transport: transport,
+		}
+
+		minioClient, err = minio.New("localhost:"+port, &minio.Options{
+			Creds:     credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
+			Secure:    useSSL,
+			Transport: httpClient.Transport,
+		})
+
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	log.Printf("%#v\n", minioClient)
@@ -233,7 +264,7 @@ func main() {
 
 	tables := []string{"course_cover", "user_avatar", "studymaterial_file"}
 
-	db, _ := sql.Open("sqlite3", "./sqlite.db")
+	db, _ := sql.Open("sqlite3", "./data/sqlite.db")
 	createTables(db, tables)
 	defer db.Close()
 
@@ -419,12 +450,12 @@ func main() {
 			log.Println(err)
 		}
 
-		res, err := delete(minioClient, db, tables[1], bucketNames[1], id)
+		res, err := delete(minioClient, db, tables[0], bucketNames[0], id)
 
 		if err != nil {
 			log.Fatalln(err)
 		}
-		if res && upload(minioClient, c, bucketNames[1], db, tables[1], id) {
+		if res && upload(minioClient, c, bucketNames[0], db, tables[0], id) {
 			c.JSON(200, gin.H{
 				"message": "file uploaded successfully.",
 			})
@@ -442,12 +473,12 @@ func main() {
 			log.Println(err)
 		}
 
-		res, err := delete(minioClient, db, tables[1], bucketNames[1], id)
+		res, err := delete(minioClient, db, tables[2], bucketNames[2], id)
 
 		if err != nil {
 			log.Fatalln(err)
 		}
-		if res && upload(minioClient, c, bucketNames[1], db, tables[1], id) {
+		if res && upload(minioClient, c, bucketNames[2], db, tables[2], id) {
 			c.JSON(200, gin.H{
 				"message": "file uploaded successfully.",
 			})

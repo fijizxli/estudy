@@ -1,4 +1,4 @@
-import axios from "../axios";
+import axios, { fileupload } from "../axios";
 import { useState, useEffect } from 'react';
 import { Link, useParams, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from "../context";
@@ -12,7 +12,7 @@ import { useMediaQuery } from 'react-responsive';
 
 export default function Course() {
     const { user } = useAuth();
-
+    const [coverPath, setCoverPath] = useState<string>("");
     const [course, setCourse] = useState<CourseType>();
     const [isEnrolled, setIsEnrolled] = useState(false);
 
@@ -21,18 +21,31 @@ export default function Course() {
     const {courseId} = useParams();
 
     useEffect( ()=>{
-        const fetchData = async () => {
-            const response = await axios.get('/courses/' + courseId, {
+        axios.get('/courses/' + courseId, {
             headers: {
                 'Authorization': `Basic ${user?.auth}`,
                 'Content-Type': 'application/json',
             }},
-            )
+        ).then(function (response){
             setCourse(response.data)
             setIsEnrolled(response.data.students.some((item: { id: number | null | undefined; }) => item.id === user?.id))
-        }
-        fetchData()
+        })
     }, []);
+
+    useEffect( ()=> {
+        if (course && course.id){
+            fileupload.get("/cover/"+course.id.toString()).then( response => {
+                setCoverPath(response.data.url[0]);
+            }
+            );
+        }
+    })
+
+    const handleDownload = async (id: string) => {
+        const response = await fileupload.get("/file/"+id);
+        const url = response.data.urls[0]
+        window.open(url, "_blank")
+    };
 
     const deleteCourse = () => {
         axios.delete('/courses/' + courseId, {
@@ -87,9 +100,13 @@ export default function Course() {
     return user?.isLoggedIn ?(
             <div className="w-10/12 m-auto">
             <div className="pt-10">
-                <Label className="text-xl flex m-auto pt-20 pb-10 justify-center text-center"><b>{course?.title}</b></Label>
-                <Label className="text-md flex pb-10 justify-center">{course?.description}</Label>
-                <Label className="text-sm flex pb-4"><i>Lecturer: {course?.lecturerName}</i></Label>
+                <div className="flex flex-col items-center space-y-4 md:flex-row md:space-y-0 md:space-x-6 p-4 rounded-lg pt-20">
+                    <img loading="eager" src={coverPath} className="w-full max-w-xs h-auto rounded-lg shadow-lg"/>
+                <div>
+                    <Label className="text-xl flex m-auto pt-20 pb-4"><b>{course?.title}</b></Label>
+                    <Label className="text-md flex pb-4">{course?.description}</Label>
+                    <Label className="text-sm flex pb-4"><i>Lecturer: {course?.lecturerName}</i></Label>
+                    <div className="mt-4">
                 {isPhone ? (
                     <div>
                     {user.role === "ADMIN" ?
@@ -175,15 +192,18 @@ export default function Course() {
                     }
                     </div>)
                 }
+                        </div>
+                    </div>
+                </div>
                 <div className="pt-8">
-                <Label className="text-md flex pb-2"><b>List of study materials:</b></Label>
+                <Label className="text-md flex pb-2"><b>List of course materials:</b></Label>
                 <hr className="mb-4 bg-black h-0.5"></hr>
                 <Table>
                     <TableHeader>
                         <TableRow>
                             <TableHead className="w-[100px]">Title</TableHead>
                             <TableHead className="w-[100px]">Description</TableHead>
-                            {/*<TableHead className="w-[100px]">Type</TableHead>*/}
+                            <TableHead className="w-[100px]">Attachment</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -195,14 +215,17 @@ export default function Course() {
                             <TableCell className="w-[100px]">
                                 <Link to={`/courses/${course.id}/${studyMaterial.id}`}>{studyMaterial.description}</Link>
                             </TableCell>
+                            <TableCell className="w-[100px]" >
+                                <Button onClick={() => handleDownload(studyMaterial.id.toString())}>Download</Button>
+                            </TableCell>
                         </TableRow>
                     ))}
                     </TableBody>
                 </Table>
-                {user.username === course?.lecturerName ?
+                {user.username === course?.lecturerName || user.role === "ADMIN" ?
                 <div className="grid grid-row m-auto justify-center pt-10 pb-10">
                     <Button asChild>
-                        <Link to={`/courses/${course?.id}/create`}><FilePlusIcon className="mr-2 h-4 w-4"/>Add study material</Link>
+                        <Link to={`/courses/${course?.id}/create`}><FilePlusIcon className="mr-2 h-4 w-4"/>Add course material</Link>
                     </Button>
                 </div>:<div></div>
                 }

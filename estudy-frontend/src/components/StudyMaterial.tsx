@@ -1,11 +1,11 @@
-import axios from "../axios";
+import axios, { fileupload } from "../axios";
 import {useState, useEffect } from 'react';
 import {Link, useParams, Navigate, useNavigate} from 'react-router-dom';
 import {useAuth} from "../context";
 import { StudyMaterial as StudyMaterialType } from "@/types";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
-import { Pencil1Icon, TrashIcon } from "@radix-ui/react-icons";
+import { DownloadIcon, Pencil1Icon, TrashIcon } from "@radix-ui/react-icons";
 import { useMediaQuery } from 'react-responsive';
 
 export default function StudyMaterial() {
@@ -40,6 +40,11 @@ export default function StudyMaterial() {
         fetchData()
     }, []);
 
+    const handleDownload = async (id: string) => {
+        const response = await fileupload.get("/file/"+id);
+        const url = response.data.urls[0]
+        window.open(url, "_blank")
+    };
 
     const deleteStudyMaterial = () => {
         axios.delete('/courses/' + courseId + "/" + studyMaterialId, {
@@ -120,6 +125,14 @@ export default function StudyMaterial() {
                     </div>
                 )
                 } 
+                { (studyMaterialId !== undefined) ? (
+                    <div className="flex p-auto m-auto justify-center" >
+                        <Button onClick={() => handleDownload(studyMaterialId)}>
+                            <DownloadIcon className="mr-2 h-4 w-4"/>Download
+                        </Button>
+                    </div>
+                ) : (<div></div>)
+                }
             </div>
         </div>
     ) : <Navigate replace to="/"/>

@@ -16,6 +16,7 @@ services:
       DB_USER: db_user
       DB_PASSWORD: password
       DATAGEN: 1
+      DATA_MIGRATION_SERVICE: "http://datasync:8081"
       ADMIN_USERNAME: admin
       ADMIN_PASSWORD: password
       API_KEY: key
@@ -35,7 +36,7 @@ services:
     image: mysql:latest
     container_name: db
     volumes:
-      - estudy-data:/var/lib/mysql
+      - ./estudy-data:/var/lib/mysql
     networks: 
       - net
     ports:
@@ -50,6 +51,7 @@ services:
     
   mongo:
     image: mongo
+    container_name: mongo
     restart: always
     ports:
       - 27017:27017
@@ -62,8 +64,8 @@ services:
 
     command: --auth
     volumes:
-     - ./mongodata:/mongodata/db
-     - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - ./mongodata:/mongodata/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 
   minio:
     image: quay.io/minio/minio
@@ -78,13 +80,75 @@ services:
       timeout: 5s
       retries: 5
     environment:
-     - MINIO_ROOT_USER=root
-     - MINIO_ROOT_PASSWORD=example1
+      - MINIO_ROOT_USER=root
+      - MINIO_ROOT_PASSWORD=example1
     volumes:
-     - ./miniodata:/data
+      - ./miniodata:/data
     ports:
       - 9001:9001
       - 9000:9000
+
+  fileupload:
+    image: fileupload:latest
+    container_name: fileupload
+    networks:
+      - net
+    environment:
+- FRONTEND_HOST=localhost
+      - FRONTEND_PORT=3000
+      - MINIO_HOST=
+      - MINIO_PORT=
+      - MINIO_ACCESS_KEY_ID=
+      - MINIO_SECRET_ACCESS_KEY=xp9HbJ0nhHjc7H1doP3RNxqC6w257UAC9tEYtgay
+      - GIN_MODE=release
+    volumes:
+      - ./sqlitedata:/app/data
+    ports:
+      - 8082:8082
+
+  datasync:
+    image: datasync:latest
+    container_name: datasync
+    networks:
+      - net
+    environment:
+      - MONGO_USER=root
+      - MONGO_PASSWORD=example
+      - MONGO_HOST=mongo
+      - MONGO_PORT=27017
+      - MONGO_DB=ratings
+      - BACKEND_HOST=estudy-backend
+      - BACKEND_PORT=8080
+      - BACKEND_KEY=key
+      - BACKEND_USER=admin
+      - BACKEND_PASSWORD=password
+      - GIN_MODE=release
+    ports:
+      - 8081:8081
+
+  ratings:
+    image: ratings:latest
+    container_name: ratings
+    networks:
+      - net
+    environment:
+      - MONGO_USER=root
+      - MONGO_PASSWORD=example
+      - MONGO_HOST=mongo
+      - MONGO_PORT=27017
+      - MONGO_DB=ratings
+- OFFCHECK_HOST=offcheck
+      - OFFCHECK_PORT=8000
+    ports:
+      - 5065:8080
+
+  offcheck:
+    image: offcheck:latest
+    container_name: offcheck
+    networks:
+      - net
+    ports:
+      - 8000:8000
 
 volumes:
   estudy-data:

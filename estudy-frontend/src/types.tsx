@@ -8,7 +8,7 @@ export type User  = {
 }
 
 export type Course = {
-    id: number | null;
+    id: number;
     title: string | null;
     description: string | null;
     lecturerName: string | null;
@@ -16,7 +16,7 @@ export type Course = {
 }
 
 export type StudyMaterial = {
-    id: number | null;
+    id: number;
     title: string | null;
     description: string | null;
 }

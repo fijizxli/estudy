@@ -1,4 +1,4 @@
-import axios from "../axios";
+import axios, { fileupload } from "../axios";
 import {useState, useEffect } from 'react'
 import {useAuth} from "../context";
 import {Navigate, useNavigate, useParams} from "react-router-dom";
@@ -10,14 +10,13 @@ import { Textarea } from "./ui/textarea";
 export default function EditStudyMaterial() {
     const { user } = useAuth();
     const [studyMaterial] = useState<any | null>(null);
-
     const [isLoading, setIsLoading] = useState(true);
-
     const [title, setTitle] = useState([]);
     const [description, setDescription] = useState([]);
-
     const {courseId} = useParams();
     const {studyMaterialId} = useParams();
+    const [file, setFile] = useState<File | null>(null);
+    const [filePath, setFilePath] = useState<string>("");
 
     const nav = useNavigate();
 
@@ -38,8 +37,37 @@ export default function EditStudyMaterial() {
     }
     }, []);
 
+    useEffect( () => {
+        fileupload.get("/file/"+studyMaterialId).then( response => {
+            setFilePath(response.data.urls[0]);
+        }
+        );
+    });
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            setFile(e.target.files[0]);
+        }
+    };
 
     const handleSubmit = async (e: any) => {
+        if (file != null){
+            const formData = new FormData();
+            formData.append('file', file);
+            if (filePath != ""){
+                fileupload.put("/file/"+studyMaterialId, formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    }
+                })
+            } else {
+                fileupload.post("/upload/file/"+studyMaterialId, formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    }
+                })
+            }
+        }
         let data = JSON.stringify(
             {
                 title: title,
@@ -94,7 +122,10 @@ export default function EditStudyMaterial() {
                     value={description}
                     required
                 ></Textarea><br/>
-
+                <div className="grid max-w-sm items-center gap-1. 5w-100 pu-0 mb-2 mu-8 inline-block radius-10 box">
+                    <Label htmlFor="file">Document</Label>
+                    <Input id="file" type="file" onChange={handleFileChange} />
+                </div>
                 <Button className="tablebutton" type="submit">
                     Edit
                 </Button>
