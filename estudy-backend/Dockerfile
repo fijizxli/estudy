@@ -1,27 +1,13 @@
-FROM openjdk:17
+FROM maven:3.9.6-eclipse-temurin-21 as build
+WORKDIR /proj
 
-LABEL authors="fijizxli"
-MAINTAINER fijizxli
+COPY . .
+RUN ["mvn", "clean", "package"]
 
-ARG DB_HOST
-ARG DB_USER
-ARG DB_PASSWORD
-ARG DATAGEN
-ARG DATA_MIGRATION_SERVICE
-ARG API_KEY
-ARG ADMIN_USERNAME
-ARG ADMIN_PASSWORD
-
-COPY target/estudy-backend-latest-pod.jar app.jar
-ENV DB_HOST=DB_HOST
-ENV DB_USER=DB_USER
-ENV DB_PASSWORD=DB_PASSWORD
-ENV DATA_MIGRATION_SERVICE=DATA_MIGRATION_SERVICE
-ENV DATAGEN=DATAGEN
-ENV API_KEY=API_KEY
-ENV ADMIN_USERNAME=ADMIN_USERNAME
-ENV ADMIN_PASSWORD=ADMIN_PASSWORD
+FROM eclipse-temurin:21-alpine
+WORKDIR /app
+COPY --from=build /proj/target/estudy-backend-latest-pod.jar app.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["java","-jar","./app.jar"]
+CMD ["java","-jar","./app.jar"]
