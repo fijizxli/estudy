@@ -450,12 +450,12 @@ func main() {
 			log.Println(err)
 		}
 
-		res, err := delete(minioClient, db, tables[1], bucketNames[1], id)
+		res, err := delete(minioClient, db, tables[0], bucketNames[0], id)
 
 		if err != nil {
 			log.Fatalln(err)
 		}
-		if res && upload(minioClient, c, bucketNames[1], db, tables[1], id) {
+		if res && upload(minioClient, c, bucketNames[0], db, tables[0], id) {
 			c.JSON(200, gin.H{
 				"message": "file uploaded successfully.",
 			})
@@ -473,12 +473,12 @@ func main() {
 			log.Println(err)
 		}
 
-		res, err := delete(minioClient, db, tables[1], bucketNames[1], id)
+		res, err := delete(minioClient, db, tables[2], bucketNames[2], id)
 
 		if err != nil {
 			log.Fatalln(err)
 		}
-		if res && upload(minioClient, c, bucketNames[1], db, tables[1], id) {
+		if res && upload(minioClient, c, bucketNames[2], db, tables[2], id) {
 			c.JSON(200, gin.H{
 				"message": "file uploaded successfully.",
 			})
