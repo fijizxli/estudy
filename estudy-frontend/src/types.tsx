@@ -16,7 +16,7 @@ export type Course = {
 }
 
 export type StudyMaterial = {
-    id: number | null;
+    id: number;
     title: string | null;
     description: string | null;
 }
