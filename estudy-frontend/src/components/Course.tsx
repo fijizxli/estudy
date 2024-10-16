@@ -4,7 +4,7 @@ import { Link, useParams, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from "../context";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
-import { Cross2Icon, Pencil1Icon, PlusIcon, TrashIcon, FilePlusIcon, PersonIcon } from "@radix-ui/react-icons";
+import { Cross2Icon, Pencil1Icon, PlusIcon, TrashIcon, FilePlusIcon } from "@radix-ui/react-icons";
 import { Course as CourseType } from "../types";
 import { StudyMaterial as StudyMaterialType } from "../types";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
