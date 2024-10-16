@@ -1,4 +1,4 @@
-import axios from "../axios";
+import axios, { fileupload } from "../axios";
 import { useState, useEffect } from "react";
 import { useAuth } from "../context";
 import { Navigate, useParams } from "react-router-dom";
@@ -24,6 +24,8 @@ export default function EditCourse() {
   const [description, setDescription] = useState([]);
   const [lecturer, setLecturer] = useState("");
   const [lecturers, setLecturers] = useState([]);
+  const [file, setFile] = useState<File | null>(null);
+  const [coverPath, setCoverPath] = useState<string>("");
   const { courseId } = useParams();
 
   useEffect(() => {
@@ -54,7 +56,39 @@ export default function EditCourse() {
     }
   }, []);
 
+  useEffect( ()=> {
+      if (courseId){
+          fileupload.get("/cover/"+courseId).then( response => {
+              setCoverPath(response.data.url[0]);
+          }
+        );
+      }
+  })
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+        setFile(e.target.files[0]);
+        }
+    };
+
   const handleSubmit = async (e: any) => {
+    if (file != null){
+        const formData = new FormData();
+        formData.append('file', file);
+        if (coverPath != ""){
+            fileupload.put("/cover/"+courseId, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                }
+            })
+        } else {
+            fileupload.post("/upload/cover/"+courseId, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                }
+            })
+        }
+    }
     let data = JSON.stringify({
       title: title,
       description: description,
@@ -127,7 +161,11 @@ export default function EditCourse() {
             required
           ></Textarea>
           <br />
-          <Button className="" type="submit">
+          <div className="grid max-w-sm items-center gap-1. 5w-100 pu-0 mb-2 mu-8 inline-block radius-10 box">
+            <Label htmlFor="picture">Cover</Label>
+            <Input id="file" type="file" onChange={handleFileChange} />
+          </div>
+          <Button className="" type="button" onClick={handleSubmit}>
             Edit
           </Button>
         </form>
