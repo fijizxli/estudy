@@ -41,6 +41,12 @@ export default function Course() {
         }
     })
 
+    const handleDownload = async (id: string) => {
+        const response = await fileupload.get("/file/"+id);
+        const url = response.data.urls[0]
+        window.open(url, "_blank")
+    };
+
     const deleteCourse = () => {
         axios.delete('/courses/' + courseId, {
             headers: {
@@ -190,14 +196,14 @@ export default function Course() {
                     </div>
                 </div>
                 <div className="pt-8">
-                <Label className="text-md flex pb-2"><b>List of study materials:</b></Label>
+                <Label className="text-md flex pb-2"><b>List of course materials:</b></Label>
                 <hr className="mb-4 bg-black h-0.5"></hr>
                 <Table>
                     <TableHeader>
                         <TableRow>
                             <TableHead className="w-[100px]">Title</TableHead>
                             <TableHead className="w-[100px]">Description</TableHead>
-                            {/*<TableHead className="w-[100px]">Type</TableHead>*/}
+                            <TableHead className="w-[100px]">Attachment</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -209,14 +215,17 @@ export default function Course() {
                             <TableCell className="w-[100px]">
                                 <Link to={`/courses/${course.id}/${studyMaterial.id}`}>{studyMaterial.description}</Link>
                             </TableCell>
+                            <TableCell className="w-[100px]" >
+                                <Button onClick={() => handleDownload(studyMaterial.id.toString())}>Download</Button>
+                            </TableCell>
                         </TableRow>
                     ))}
                     </TableBody>
                 </Table>
-                {user.username === course?.lecturerName ?
+                {user.username === course?.lecturerName || user.role === "ADMIN" ?
                 <div className="grid grid-row m-auto justify-center pt-10 pb-10">
                     <Button asChild>
-                        <Link to={`/courses/${course?.id}/create`}><FilePlusIcon className="mr-2 h-4 w-4"/>Add study material</Link>
+                        <Link to={`/courses/${course?.id}/create`}><FilePlusIcon className="mr-2 h-4 w-4"/>Add course material</Link>
                     </Button>
                 </div>:<div></div>
                 }
