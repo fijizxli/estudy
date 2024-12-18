@@ -1,4 +1,4 @@
-function ErrorMessage(props: ErrorMessageProps) {
+function ErrorMessage(props: any) {
     return (
         <div className="errorMessage">{props.text}</div>
     )
