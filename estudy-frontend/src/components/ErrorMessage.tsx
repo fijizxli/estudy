@@ -1,6 +1,4 @@
-import React from 'react'
-
-function ErrorMessage(props) {
+function ErrorMessage(props: ErrorMessageProps) {
     return (
         <div className="errorMessage">{props.text}</div>
     )
