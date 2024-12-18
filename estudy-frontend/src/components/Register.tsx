@@ -58,7 +58,8 @@ export default function Register() {
                             'Content-Type': 'application/json',
                     }});
 
-                const response = await fileupload.post("/upload/avatar/"+userResponse.data.id, formData, {
+                //const response = 
+                await fileupload.post("/upload/avatar/"+userResponse.data.id, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     }, 
