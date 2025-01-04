@@ -94,7 +94,7 @@ services:
     networks:
       - net
     environment:
-- FRONTEND_HOST=localhost
+      - FRONTEND_HOST=localhost
       - FRONTEND_PORT=3000
       - MINIO_HOST=
       - MINIO_PORT=
@@ -137,7 +137,7 @@ services:
       - MONGO_HOST=mongo
       - MONGO_PORT=27017
       - MONGO_DB=ratings
-- OFFCHECK_HOST=offcheck
+      - OFFCHECK_HOST=offcheck
       - OFFCHECK_PORT=8000
     ports:
       - 5065:8080
