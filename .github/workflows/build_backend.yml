@@ -19,6 +19,7 @@ jobs:
         env:
           ACTIONS_RUNNER_DEBUG: false
           VALIDATE_ALL_CODEBASE: true
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
