@@ -17,6 +17,7 @@ jobs:
       - name: Super-Linter
         uses: super-linter/super-linter@v7.2.1
         env:
+          ACTIONS_RUNNER_DEBUG: false
           VALIDATE_ALL_CODEBASE: true
 
       - name: Set up JDK 21
