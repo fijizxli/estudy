@@ -20,8 +20,8 @@ jobs:
           ACTIONS_RUNNER_DEBUG: false
           VALIDATE_ALL_CODEBASE: true
           VALIDATE_PYTHON_PYINK: false
-          DISABLE_LINTERS: C, C++, PYTHON, GO, JAVASCRIPT
-          ENABLE_LINTERS: JAVA
+          ENABLED_LINTERS: JAVA
+          DISABLE_LINTERS: "*" # Disable all other linters
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
 
       - name: Set up JDK 21
