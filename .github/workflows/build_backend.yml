@@ -14,15 +14,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: "cd"
-	    run: |
-		  cd estudy-backend
       - name: Super-Linter
         uses: super-linter/super-linter@v7.2.1
         env:
-          ACTIONS_RUNNER_DEBUG: false
-          VALIDATE_ALL_CODEBASE: true
-          VALIDATE_PYTHON_PYINK: false
+          ACTIONS_RUNNER_DEBUG: true
+          VALIDATE_ALL_CODEBASE: false
+          VALIDATE_JAVA: true
           ENABLED_LINTERS: JAVA
           DISABLE_LINTERS: "*" # Disable all other linters
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
