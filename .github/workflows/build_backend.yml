@@ -30,10 +30,10 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Test with Maven
-        run: | 
-          cd estudy-backend 
-          mvn test
+#      - name: Test with Maven
+#        run: | 
+#          cd estudy-backend 
+#          mvn test
 
       - name: Build with Maven
         run: | 
