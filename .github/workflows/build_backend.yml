@@ -14,6 +14,13 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+
       - name: Super-Linter
         uses: super-linter/super-linter@v7.2.1
         env:
@@ -23,17 +30,16 @@ jobs:
           ENABLED_LINTERS: JAVA
           DISABLE_LINTERS: "*" # Disable all other linters
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
-
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
         with:
-          java-version: '21'
-          distribution: 'temurin'
+          LINT_DIR: my-java-app  # Change this to your subdirectory
+          LANGUAGES: java  # Only run the linter for Java
+
 
 #      - name: Test with Maven
 #        run: | 
 #          cd estudy-backend 
 #          mvn test
+
 
       - name: Build with Maven
         run: | 
