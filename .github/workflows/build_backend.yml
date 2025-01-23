@@ -31,7 +31,11 @@ jobs:
           distribution: 'temurin'
 
       - name: Test with Maven
-        run: mvn test
+        run: | 
+          cd estudy-backend 
+          mvn test
 
       - name: Build with Maven
-        run: mvn clean package
+        run: | 
+          cd estudy-backend 
+          mvn clean package 
