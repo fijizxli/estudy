@@ -18,10 +18,9 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Get npm cache directory
-        id: npm-cache-dir
+      - name: cd into estudy-frontend
         shell: bash
-        run: echo "dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
+        run: cd estudy-frontend
 
       - name: Cache node modules
         uses: actions/cache@v3
@@ -32,7 +31,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: estudy-frontend
-        run: npm install
+        run: npm i
 
       - name: Build Project
         working-directory: estudy-frontend
