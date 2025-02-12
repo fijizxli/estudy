@@ -18,6 +18,18 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Get npm cache directory
+        id: npm-cache-dir
+        shell: bash
+        run: echo "dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
+
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: node_modules-${{hashFiles('package.lock')}}
+          restore-keys: node_modules
+
       - name: Install dependencies
         working-directory: estudy-frontend
         run: npm install
