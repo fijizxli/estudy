@@ -22,6 +22,10 @@ jobs:
         shell: bash
         run: cd estudy-frontend
 
+      - name: cwd
+        shell: bash
+        run: pwd
+
       - name: Cache node modules
         uses: actions/cache@v3
         with:
